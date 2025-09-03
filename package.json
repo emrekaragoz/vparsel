@@ -1,6 +1,9 @@
 {
   "name": "react",
   "version": "1.0.0",
+  "homepage": "https://emrekaragoz.github.io/vparsel",
+  "name": "react",
+  "version": "1.0.0",
   "description": "",
   "keywords": [],
   "main": "src/index.tsx",
@@ -21,6 +24,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "node -e \"require('fs').copyFileSync('build/index.html','build/404.html')\"",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
