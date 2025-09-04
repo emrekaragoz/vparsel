@@ -97,15 +97,15 @@
     "info": {
       "tanim": "Çiftlik",
       "agac": {
-        "memecik": 45,
-        "gemlik": 5,
+        "memecik": 505,
+        "gemlik": 346,
         "ayvalik": 0,
-        "domat": 22,
+        "domat": 0,
         "kalamat": 0
       },
       "fidan": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 15,
+        "gemlik": 29,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -316,33 +316,33 @@
       "durum": "1",
       "ilceId": 562,
       "zeminKmdurum": "Ana Taşınmaz",
-      "parselNo": "8",
+      "parselNo": "148/8-149/7",
       "mahalleAd": "Karakızlar",
-      "ozet": "Karakızlar-148/8",
+      "ozet": "Karakızlar-148/8-149/7",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "15.987,43",
-      "adaNo": "148",
+      "alan": "24.358,23",
+      "adaNo": "",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
       "mahalleId": 166683,
       "pafta": "L18-B-24-D-1, L18-B-23-C-2"
     },
     "info": {
-      "tanim": "Dere alanı 10 dönüm karşısı",
+      "tanim": "Otele göre sağ tarafı",
       "agac": {
-        "memecik": 55,
-        "gemlik": 0,
+        "memecik": 0,
+        "gemlik": 431,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
-        "memecik": 110,
+        "memecik": 0,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
-        "kalamat": 0
+        "ispanyol": 345
       }
     }
   },
@@ -504,7 +504,7 @@
       "ozet": "Karakızlar-149/12-13-14",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "1.950,98",
+      "alan": "13.048,60",
       "adaNo": "149",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
@@ -512,10 +512,10 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Tel örgü Dere arası",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 201,
+        "gemlik": 1,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -746,7 +746,7 @@
       "ozet": "Karakızlar-149/1-4",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "10.273,88",
+      "alan": "18.970,27",
       "adaNo": "149",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
@@ -754,12 +754,12 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "",
+      "tanim": "(149/4:10.273,88 MEDİTERA A.Ş.)",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
-        "domat": 0,
+        "memecik": 168,
+        "gemlik": 153,
+        "ayvalik": 15,
+        "domat": 44,
         "kalamat": 0
       },
       "fidan": {
@@ -819,10 +819,10 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Muskalı",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 38,
+        "gemlik": 23,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -2299,7 +2299,7 @@
       "pafta": "L18-B-23-B-3"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Salamura",
       "agac": {
         "memecik": 0,
         "gemlik": 0,
@@ -2312,7 +2312,7 @@
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
-        "kalamat": 0
+        "ispanyol": 176
       }
     }
   },
@@ -2359,7 +2359,7 @@
       "ozet": "Çakırbeyli-118/1-2",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "2.816,40",
+      "alan": "3.016",
       "adaNo": "118",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
@@ -2367,10 +2367,10 @@
       "pafta": "L18-B-24-A-4"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Yol kenarı Çakırbeyli k.",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 40,
+        "gemlik": 6,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -2422,7 +2422,7 @@
       "ozet": "Çakırbeyli-119/27-50",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "868,95",
+      "alan": "943,55",
       "adaNo": "119",
       "nitelik": "Tarla",
       "ilAd": "İzmir",
@@ -2430,9 +2430,9 @@
       "pafta": "L18-B-23-B-C"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Yolkenarı Salamura önü küçük",
       "agac": {
-        "memecik": 0,
+        "memecik": 14,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -2899,7 +2899,7 @@
       "ozet": "Karakızlar-127/7-8-30-31",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "7.560,83",
+      "alan": " 36.557,01",
       "adaNo": "127",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
@@ -2907,17 +2907,17 @@
       "pafta": "L18-B-24-D-1, L18-B-24-D-1-A"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Çiftlik Önü(127-7, 5/2 Hisse)(/30/31 SEVİNÇLİ A.Ş.)",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
-        "domat": 0,
+        "memecik": 169,
+        "gemlik": 134,
+        "ayvalik": 7,
+        "domat": 169,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 50,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -2951,12 +2951,12 @@
       "pafta": "L18-B-24-D-1, L18-B-23-C-2, L18-B-24-A-4, L18-B-23"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Bağ Evi 130 12",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
-        "domat": 0,
+        "memecik": 51,
+        "gemlik": 121,
+        "ayvalik": 144,
+        "domat": 4,
         "kalamat": 0
       },
       "fidan": {
@@ -2986,7 +2986,7 @@
       "ozet": "Karakızlar-149/12-13-14",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "1.950,98",
+      "alan": "13.048,60",
       "adaNo": "149",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
@@ -2994,10 +2994,10 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Tel örgü Dere arası",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 201,
+        "gemlik": 1,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
