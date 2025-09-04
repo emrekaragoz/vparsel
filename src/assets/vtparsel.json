@@ -235,12 +235,12 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "Fidanlık",
+      "tanim": "Otel Sol Tarafı",
       "agac": {
-        "memecik": 0,
+        "memecik": 62,
         "gemlik": 0,
         "ayvalik": 0,
-        "domat": 0,
+        "domat": 2,
         "kalamat": 0
       },
       "fidan": {
@@ -421,7 +421,7 @@
       "pafta": "L18-C-03-C-1"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Fabrika Arazisi",
       "agac": {
         "memecik": 0,
         "gemlik": 0,
@@ -583,7 +583,7 @@
       "ozet": "Karakızlar-148/1-2",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "5.912,93",
+      "alan": "13.417,63",
       "adaNo": "148",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
@@ -591,17 +591,17 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Tel Örgü İçi ve Üst Düzlük",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 171,
+        "gemlik": 41,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 90,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -675,17 +675,17 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Şelale (HİSSELİ 1603/2400)",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
-        "domat": 0,
+        "memecik": 156,
+        "gemlik": 63,
+        "ayvalik": 8,
+        "domat": 1,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 31,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -915,18 +915,18 @@
       "pafta": "L18-B-24-D-1, L18-B-23-C-2, L18-B-24-D-1-A"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Merkezi 32 Dönüm",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
-        "domat": 0,
+        "memecik": 116,
+        "gemlik": 665,
+        "ayvalik": 7,
+        "domat": 31,
         "kalamat": 0
       },
       "fidan": {
-        "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
+        "memecik": 5,
+        "gemlik": 17,
+        "ayvalik": 2,
         "domat": 0,
         "kalamat": 0
       }
@@ -1013,16 +1013,16 @@
       "pafta": "L18-B-24-D-1, L18-B-23-C-2, L18-B-24-D-1-A"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Sera Arkası",
       "agac": {
-        "memecik": 0,
+        "memecik": 326,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
-        "memecik": 0,
+        "memecik": 193,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -1108,12 +1108,12 @@
       "pafta": "L18-B-24-D-1, L18-B-23-C-2, L18-B-24-A-4, L18-B-23"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Bağ Evi 130 12",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
-        "domat": 0,
+        "memecik": 51,
+        "gemlik": 121,
+        "ayvalik": 144,
+        "domat": 4,
         "kalamat": 0
       },
       "fidan": {
@@ -1180,12 +1180,12 @@
       "pafta": "L18-B-24-D-1, L18-B-24-A-4, L18-B-24-D-1-A"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Yer 256",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 28,
+        "gemlik": 58,
         "ayvalik": 0,
-        "domat": 0,
+        "domat": 4,
         "kalamat": 0
       },
       "fidan": {
@@ -1256,9 +1256,9 @@
       "pafta": "L18-B-24-D-1"
     },
     "info": {
-      "tanim": "",
+      "tanim": "10 dönüm(SEVİNÇLİ A.Ş.)",
       "agac": {
-        "memecik": 0,
+        "memecik": 130,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -1266,7 +1266,7 @@
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 94,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -1352,16 +1352,16 @@
       "pafta": "L18-B-24-D-2"
     },
     "info": {
-      "tanim": "",
+      "tanim": "48 Dönüm",
       "agac": {
-        "memecik": 0,
+        "memecik": 659,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
-        "memecik": 0,
+        "memecik": 122,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -1447,17 +1447,17 @@
       "pafta": "L18-B-24-A-4"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Aşılı",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 155,
+        "gemlik": 273,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 18,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -1520,9 +1520,9 @@
       "pafta": "L18-B-24-A-3"
     },
     "info": {
-      "tanim": "",
+      "tanim": "13 Dönüm Memecik",
       "agac": {
-        "memecik": 0,
+        "memecik": 312,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -1619,9 +1619,9 @@
       "pafta": "L18-B-24-A-3"
     },
     "info": {
-      "tanim": "",
+      "tanim": "14 Dönüm",
       "agac": {
-        "memecik": 0,
+        "memecik": 278,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -1629,7 +1629,7 @@
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 312,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -1692,18 +1692,18 @@
       "pafta": "L18-B-24-A-4"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Asmalı Tarla",
       "agac": {
-        "memecik": 0,
+        "memecik": 58,
         "gemlik": 0,
-        "ayvalik": 0,
+        "ayvalik": 176,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
         "gemlik": 0,
-        "ayvalik": 0,
+        "ayvalik": 87,
         "domat": 0,
         "kalamat": 0
       }
@@ -1763,9 +1763,9 @@
       "pafta": "L18-B-24-A-4"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Meşeli Tarla",
       "agac": {
-        "memecik": 0,
+        "memecik": 73,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -1773,7 +1773,7 @@
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 223,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -1835,20 +1835,20 @@
       "pafta": "L18-B-24-A-4"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Aşılı üstü 10 dönüm",
       "agac": {
-        "memecik": 0,
+        "memecik": 111,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
-        "kalamat": 0
+        "kalamat": 5
       },
       "fidan": {
         "memecik": 0,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
-        "kalamat": 0
+        "ispanyol": 263
       }
     }
   },
@@ -1923,9 +1923,9 @@
       "pafta": "L18-B-24-A-3, L18-B-24-A-4"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Aşılı üstü 10 dönüm altı",
       "agac": {
-        "memecik": 0,
+        "memecik": 85,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -1933,7 +1933,7 @@
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 368,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -2024,9 +2024,9 @@
       "pafta": "L18-B-24-A-3"
     },
     "info": {
-      "tanim": "",
+      "tanim": "30 dönüm",
       "agac": {
-        "memecik": 0,
+        "memecik": 260,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -2034,7 +2034,7 @@
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 622,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -2099,18 +2099,18 @@
       "pafta": "L18-C-03-C-1, L18-C-03-B-4"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Karakuyu 22 dönüm",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
+        "memecik": 65,
+        "gemlik": 337,
+        "ayvalik": 67,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
+        "gemlik": 6,
+        "ayvalik": 11,
         "domat": 0,
         "kalamat": 0
       }
@@ -2159,17 +2159,17 @@
       "pafta": "L18-C-03-B-4"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Artezyen Tarla",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 5,
+        "gemlik": 26,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 5,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -2217,9 +2217,9 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Yol kenarı Çakırbeyli",
       "agac": {
-        "memecik": 0,
+        "memecik": 38,
         "gemlik": 0,
         "ayvalik": 0,
         "domat": 0,
@@ -2601,12 +2601,12 @@
       "durum": "1",
       "ilceId": 562,
       "zeminKmdurum": "Ana Taşınmaz",
-      "parselNo": "189",
+      "parselNo": "189-190-176",
       "mahalleAd": "Karakızlar",
-      "ozet": "Karakızlar-103/189",
+      "ozet": "Karakızlar-103/189-190-176",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "13.011,29",
+      "alan": " 31.688,38",
       "adaNo": "103",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
@@ -2614,60 +2614,17 @@
       "pafta": "L18-B-24-A-4"
     },
     "info": {
-      "tanim": "",
+      "tanim": "Aşılı Üstü Büyük Gemlik",
       "agac": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 147,
+        "gemlik": 852,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
-        "domat": 0,
-        "kalamat": 0
-      }
-    }
-  },
-  {
-    "type": "Feature",
-    "geometry": {
-      "type": "Polygon",
-      "coordinates": []
-    },
-    "properties": {
-      "ilceAd": "Torbalı",
-      "mevkii": "Süpürgelik",
-      "ilId": 57,
-      "durum": "1",
-      "ilceId": 562,
-      "zeminKmdurum": "Ana Taşınmaz",
-      "parselNo": "176",
-      "mahalleAd": "Karakızlar",
-      "ozet": "Karakızlar-103/176",
-      "gittigiParselListe": "",
-      "gittigiParselSebep": "",
-      "alan": "3.219,49",
-      "adaNo": "103",
-      "nitelik": "Zeytinlik",
-      "ilAd": "İzmir",
-      "mahalleId": 166683,
-      "pafta": "L18-B-24-A-3, L18-B-24-A-4"
-    },
-    "info": {
-      "tanim": "",
-      "agac": {
-        "memecik": 0,
-        "gemlik": 0,
-        "ayvalik": 0,
-        "domat": 0,
-        "kalamat": 0
-      },
-      "fidan": {
-        "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 48,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -2719,7 +2676,7 @@
       "ozet": "Karakızlar-127/1-2-3",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "3.541,38",
+      "alan": "6.310,59",
       "adaNo": "127",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
@@ -2727,17 +2684,17 @@
       "pafta": "L18-B-24-D-1, L18-B-24-D-1-A"
     },
     "info": {
-      "tanim": "",
+      "tanim": "6,5 Dönüm (Ev)",
       "agac": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 126,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 9,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -2804,7 +2761,7 @@
       "ozet": "Karakızlar-127/19-20",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": "9.891,40",
+      "alan": "15.512,55",
       "adaNo": "127",
       "nitelik": "Bağ",
       "ilAd": "İzmir",
@@ -2812,17 +2769,17 @@
       "pafta": "L18-B-24-D-1, L18-B-24-D-1-A"
     },
     "info": {
-      "tanim": "",
+      "tanim": "8 Sıra Düz Arazi",
       "agac": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 299,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
-        "gemlik": 0,
+        "gemlik": 27,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
@@ -2899,7 +2856,7 @@
       "ozet": "Karakızlar-127/7-8-30-31",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
-      "alan": " 36.557,01",
+      "alan": "36.557,01",
       "adaNo": "127",
       "nitelik": "Zeytinlik",
       "ilAd": "İzmir",
