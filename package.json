@@ -2,7 +2,7 @@
   "name": "react",
   "version": "1.0.0",
   "description": "",
-  "homepage": "https://emrekaragoz.github.io/vparsel"
+  "homepage": "https://emrekaragoz.github.io/vparsel",
   "keywords": [],
   "main": "src/index.tsx",
   "dependencies": {
