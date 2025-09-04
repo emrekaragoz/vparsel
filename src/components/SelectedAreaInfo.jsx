@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useContext } from "react";
 import useParcels from "../hooks/useParcels.js";
 import { ParcelContext } from "../contexts/ParcelContext.jsx";
+import logo from "../assets/resim.webp";
 
 const toFloatFlexible = (v) => {
   if (typeof v === "number") return v;
@@ -82,27 +83,30 @@ export default function SelectedAreaInfo({ parcel }) {
       <div style={{ maxWidth: 1100, margin: "8px auto" }}>
         <div className="sai-panel sai-scroll">
           {/* Başlık + sağda küçük buton */}
-          <div className="sai-head">
-            <div>Seçili Alan Bilgisi</div>
-            <button
-              type="button"
-              className="sai-btn"
-              onClick={() => setOpenList(true)}
-              title="Parsel Listeleri"
-            >
-              Parsel Listeleri
-            </button>
+          <div className="sai-head sai-head-3">
+            <div className="sai-head-left"></div>
+
+            <div className="sai-head-center">
+              <img src={logo} alt="Logo" className="sai-head-logo" />
+            </div>
+
+            <div className="sai-head-right">
+              <button
+                type="button"
+                className="sai-btn"
+                onClick={() => setOpenList(true)}
+                title="Parsel Listeleri"
+              >
+                Parsel Listeleri
+              </button>
+            </div>
           </div>
 
           {parcel ? (
             <>
               {/* 🔹 TANIM • PARSEL • DÖNÜM → AYNI SATIR */}
               <div className="sai-row-3">
-                <Section title="Tanım">
-                  <div className="sai-desc">{info.tanim || "-"}</div>
-                </Section>
-
-                <Section title="Parsel Bilgisi">
+                <Section title="">
                   <div className="sai-kv">
                     <div>
                       <span className="key">Mahalle</span>
@@ -116,8 +120,17 @@ export default function SelectedAreaInfo({ parcel }) {
                     </div>
                   </div>
                 </Section>
+                <Section title="">
+                  <div className="sai-kv">
+                    <div>
+                      <span className="key">Tanım</span>
+                      <span className="val">{info.tanim || "-"}</span>
+                    </div>
+                  </div>
+                  <div className="sai-desc">{}</div>
+                </Section>
 
-                <Section title="Dönüm Bilgisi">
+                <Section title="">
                   <div className="sai-metric">
                     {donumVal ? `${nfArea.format(donumVal)} dönüm` : "-"}
                   </div>
