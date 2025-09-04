@@ -155,9 +155,9 @@
       "durum": "1",
       "ilceId": 562,
       "zeminKmdurum": "Ana Taşınmaz",
-      "parselNo": "6",
+      "parselNo": "5-6",
       "mahalleAd": "Karakızlar",
-      "ozet": "Karakızlar-148/6",
+      "ozet": "Karakızlar-148/5-6",
       "gittigiParselListe": "",
       "gittigiParselSebep": "",
       "alan": "6.215,81",
@@ -168,11 +168,11 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "Ofis karşısı",
+      "tanim": "Ofis Karşısı",
       "agac": {
-        "memecik": 0,
-        "gemlik": 12,
-        "ayvalik": 33,
+        "memecik": 44,
+        "gemlik": 57,
+        "ayvalik": 218,
         "domat": 0,
         "kalamat": 1
       },
@@ -2969,3 +2969,4 @@
     }
   }
 ]
+
