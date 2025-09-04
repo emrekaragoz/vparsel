@@ -22,7 +22,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "postbuild": "node -e \"require('fs').copyFileSync('build/index.html','build/404.html')\""
+    "postbuild": "node -e \"require('fs').copyFileSync('build/index.html','build/404.html')\"",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
