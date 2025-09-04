@@ -1,6 +1,6 @@
 {
   "name": "VIT PARSEL",
-  "short_name": "VPARSEL",
+  "short_name": "map",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
