@@ -4,7 +4,7 @@
   "description": "",
   "homepage": "https://emrekaragoz.github.io/vparsel",
   "keywords": [],
-  "main": "src/index.tsx",
+  "main": "src/index.jsx",
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
