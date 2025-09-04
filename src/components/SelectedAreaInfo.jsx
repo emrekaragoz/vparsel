@@ -80,7 +80,7 @@ export default function SelectedAreaInfo({ parcel }) {
     <div
       style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 9990 }}
     >
-      <div style={{ maxWidth: 1100, margin: "8px auto" }}>
+      <div style={{ maxWidth: 1100, margin: "2px auto" }}>
         <div className="sai-panel sai-scroll">
           {/* Başlık + sağda küçük buton */}
           <div className="sai-head sai-head-3">
@@ -257,3 +257,4 @@ export default function SelectedAreaInfo({ parcel }) {
     </div>
   );
 }
+
