@@ -174,7 +174,7 @@
         "gemlik": 57,
         "ayvalik": 218,
         "domat": 0,
-        "kalamat": 1
+        "kalamat": 0
       },
       "fidan": {
         "memecik": 0,
@@ -2969,6 +2969,7 @@
     }
   }
 ]
+
 
 
 
