@@ -426,7 +426,7 @@ body,
 .sai-box-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   margin-bottom: 8px;
 }
 .sai-box-icon {
@@ -477,9 +477,11 @@ body,
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-  padding: 10px 12px;
-  max-height: 40vh;
+  padding: 6px 12px;
+  max-height: 50vh;
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 .sai-head {
   font-weight: 700;
@@ -490,9 +492,8 @@ body,
 
 .sai-card {
   background: #fff;
-  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 10px;
+  padding: px;
 }
 .sai-card-title {
   color: #6b7280;
@@ -508,32 +509,32 @@ body,
 /* 🔹 3’lü üst satır: Tanım • Parsel • Dönüm */
 .sai-row-3 {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 0.9fr; /* Tanım geniş, diğerleri kompakt */
-  gap: 8px;
-  margin-top: 8px;
+  grid-template-columns: 1.4fr 1.4fr 1fr; /* Tanım geniş, diğerleri kompakt */
+  gap: 4px;
+  margin-top: 4px;
 }
 
 /* Alt satır: Ağaç • Fidan (mobilde de 2 sütun tutmak istersen grid’i koru) */
 .sai-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 4px;
+  margin-top: 4px;
 }
 
 /* Tanım metni (normal) */
 .sai-desc {
   font-weight: 600;
   font-size: 14px;
-  line-height: 1.35;
+  line-height: 1;
 }
 
 /* Key/Value satırları */
 .sai-kv > div {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 3px 0;
+  justify-content: left;
+  gap: 8px;
+  padding: 1px 1;
 }
 .sai-kv .key {
   color: #6b7280;
@@ -549,7 +550,7 @@ body,
 /* Dönüm metrikleri (normal boy) */
 .sai-metric {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.1;
   color: #0f172a;
 }
@@ -613,6 +614,71 @@ body,
 }
 .sai-btn:hover {
   background: #f9fafb;
+}
+/* Başlık: sol başlık • ortada logo • sağda buton */
+.sai-head.sai-head-3 {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* sol • logo • sağ */
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px; /* kompakt */
+}
+.sai-head-left {
+  justify-self: start;
+}
+.sai-head-center {
+  justify-self: center;
+}
+.sai-head-right {
+  justify-self: end;
+}
+
+/* Küçük logo */
+.sai-head-logo {
+  height: 18px; /* boyutu buradan ayarla (örn. 16–22px) */
+  width: auto;
+  object-fit: contain;
+  display: block;
+  opacity: 0.95;
+  pointer-events: none; /* tıklamayı engellemesin */
+}
+
+/* (Opsiyonel) antrasit temada görünürlüğü artır */
+.sai-panel.anthracite .sai-head-logo {
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.4));
+}
+
+/* === SAI: Dikey tür listesi (Ağaç/Fidan) === */
+.sai-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column; /* sıkı aralık */
+}
+
+.sai-list-item {
+  display: flex;
+  align-items: center;
+  padding: 1px 22px;
+  background: #fff;
+}
+
+.sai-list-name {
+  font-weight: 600;
+  font-size: 12px;
+  color: #111827;
+  letter-spacing: 0.2px;
+}
+
+/* Sağdaki adet rozeti */
+.sai-count-badge {
+  font-weight: 600;
+  font-size: 12px;
+  min-width: 36px;
+  text-align: center;
+  background: #fff;
+  color: #111827;
 }
 
 /* ===== Parsel Listeleri Modal ===== */
@@ -721,4 +787,229 @@ body,
   background: #fff;
   color: #111827;
 }
+.pill-inline.doluluk {
+  background: #eef2ff; /* indigo-50 */
+  border-color: #c7d2fe; /* indigo-200 */
+  color: #3730a3; /* indigo-800 */
+  font-weight: 600;
+}
+.pill-progress {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 60px; /* ihtiyaca göre 120–200px */
+  height: 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.pill-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: #c55622; /* JS ile override ediliyor */
+  transition: width 180ms ease-in-out;
+}
+
+.pill-progress-label {
+  position: relative; /* label üstte kalsın */
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+}
+
 /* ===== /Parsel Listeleri Modal ===== */
+/* === Splash overlay (resim2.webp) === */
+.splash-root {
+  position: fixed;
+  inset: 0;
+  z-index: 10050; /* panelin üstünde, UI’yi engellemesin */
+  pointer-events: none; /* tıklamayı bloklamasın */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splash-img {
+  width: min(60vw, 520px);
+  height: auto;
+  opacity: 0;
+  transform: scale(0.96);
+  animation: splash-pop 900ms ease-out forwards; /* giriş animasyonu */
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.18));
+}
+/* 3 metrik yan yana kart gibi */
+.sai-row-3.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Her Section zaten sai-card ama metrik kartlarına özel stil */
+.sai-row-3.metrics .sai-card {
+  background: linear-gradient(180deg, #f9fafb 0%, #ffffff 60%);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Başlık */
+.sai-row-3.metrics .sai-card-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+/* Değer */
+.sai-row-3.metrics .sai-metric {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* İstersen değerleri ortalayabilirsin (opsiyonel) */
+/*
+.sai-row-3.metrics .sai-card-body{
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* İstersen hafif gecikmeli fade-out eklemek için ikinci animasyonu zincirleyebilirsin:
+   animation: splash-pop 700ms ease-out forwards, splash-fade 1200ms ease-out 900ms forwards; */
+
+@keyframes splash-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes splash-fade {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* Grupla toggle (zoom butonlarının yanında) */
+.group-toggle {
+  position: absolute;
+  top: var(--leaflet-zoom-margin, 10px);
+  left: calc(
+    var(--leaflet-zoom-margin, 10px) + var(--leaflet-zoom-size, 36px) + 8px
+  );
+  z-index: 1005;
+}
+.group-toggle-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 5px;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  background: #ffffff; /* düz beyaz */
+  backdrop-filter: none; /* flu kaldırıldı */
+  font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Roboto,
+    Arial, sans-serif;
+  font-size: 12px;
+  color: #111827;
+  cursor: pointer;
+}
+
+.group-toggle-inner:hover {
+  background: #f9fafb; /* hoverda hafif gri */
+}
+.group-toggle input {
+  accent-color: #2563eb;
+}
+
+.group-toggle input {
+  accent-color: #2563eb;
+}
+.group-hint {
+  margin-top: 6px;
+  padding: 4px 6px;
+  font-size: 11px;
+  color: #374151;
+  background: #ffffffb3;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+/* 3 metrik kart görünümü (zaten eklediysen tekrar ekleme) */
+.sai-row-3.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+.sai-row-3.metrics .sai-card {
+  background: linear-gradient(180deg, #f9fafb 0%, #ffffff 60%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+.sai-row-3.metrics .sai-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+.sai-row-3.metrics .sai-metric {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Progress pill (doluluk) — varsa tekrar eklemeye gerek yok */
+.pill-progress {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 160px;
+  height: 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  overflow: hidden;
+}
+.pill-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: #22c55e;
+  transition: width 180ms ease-in-out;
+}
+.pill-progress-label {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+}
