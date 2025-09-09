@@ -494,7 +494,7 @@ body,
 
 .sai-card {
   background: #fff;
-  border-radius: 10px;
+    border-radius: 10px;
   padding: 4px 8px;
   display: flex;
   flex-direction: column;
