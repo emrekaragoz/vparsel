@@ -131,9 +131,6 @@ export default function MapContainer() {
         })}
       </LeafletMap>
             {/* Sol üst logo (tamamen geçişli) */}
-      <div className="map-brand">
-        <img src={logo} alt="Logo" />
-      </div>
     </div>
   );
 }

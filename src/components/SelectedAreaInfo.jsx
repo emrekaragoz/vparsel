@@ -35,6 +35,23 @@ export default function SelectedAreaInfo({ parcel }) {
   const { selectedParcel, setSelectedParcel, groupMode, groupedParcels } = useContext(ParcelContext);
 
   const [openList, setOpenList] = useState(false);
+  // Parsel Listeleri arama çubuğu
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredParcels = useMemo(() => {
+    if (!searchTerm.trim()) return parcels;
+    const q = searchTerm.trim().toLowerCase();
+    return parcels.filter((p) => {
+      const pr = p.properties || {};
+      const tanim = (p.info && p.info.tanim) || pr.tanim || "";
+      const adaNo = pr.adaNo ?? p.ada ?? "";
+      const parNo = pr.parselNo ?? p.parsel ?? "";
+      return (
+        tanim.toLowerCase().includes(q) ||
+        String(adaNo).toLowerCase().includes(q) ||
+        String(parNo).toLowerCase().includes(q)
+      );
+    });
+  }, [searchTerm, parcels]);
   
   // ===== DRAG (logodan tut) =====
   const [offset, setOffset] = useState(0);
@@ -339,8 +356,19 @@ export default function SelectedAreaInfo({ parcel }) {
             </button>
           </div>
 
+          {/* Basit arama çubuğu */}
+          <div style={{ padding: '0 16px 10px 16px' }}>
+            <input
+              type="text"
+              placeholder="Parsel ara..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="plist-search"
+              style={{ width: '100%', padding: '7px 12px', borderRadius: 6, border: '1px solid #bbb', fontSize: 15, marginBottom: 6 }}
+            />
+          </div>
           <div className="plist-list">
-            {parcels.map((p) => {
+            {filteredParcels.map((p) => {
               const pr = p.properties || {};
               const tanim = (p.info && p.info.tanim) || pr.tanim || "-";
               const adaNo = pr.adaNo ?? p.ada ?? "-";
