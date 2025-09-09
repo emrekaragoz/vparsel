@@ -1,121 +1,139 @@
-import React, { useContext, useEffect, useMemo, useRef } from "react";
-import {
-  MapContainer as LeafletMap,
-  TileLayer,
-  Polygon,
-  useMapEvents,
-} from "react-leaflet";
+import React, { useContext, useEffect, useRef } from "react";
+import { MapContainer as LeafletMap, TileLayer, Polygon, useMap } from "react-leaflet";
 import L from "leaflet";
-import useParcels from "../../hooks/useParcels.js";
-import { ParcelContext } from "../../contexts/ParcelContext.jsx";
-import SelectedAreaInfo from "../SelectedAreaInfo.jsx";
+import "leaflet/dist/leaflet.css";
+import useParcels from "../../hooks/useParcels";
+import { ParcelContext } from "../../contexts/ParcelContext";
 import logo from "../../assets/resim.webp";
 
-// (opsiyonel) marker iconları
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
-L.Marker.prototype.options.icon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-
-function MapClickClear({ onClick }) {
-  useMapEvents({ click: () => onClick?.() }); // sadece harita boşluğunda çalışır (bubbling kapalı olduğunda)
-  return null;
-}
+const strokeDefault = { color: "blue", weight: 2, fillOpacity: 0.1 };
+const strokeSelected = { color: "red", weight: 3, fillOpacity: 0.2 };
 
 export default function MapContainer() {
   const { parcels } = useParcels();
-  const { selectedParcel, setSelectedParcel } = useContext(ParcelContext);
+  const {
+    selectedParcel,
+    setSelectedParcel,
+    groupMode,
+    setGroupMode,
+    groupedParcels,
+    toggleGroupParcel,
+  } = useContext(ParcelContext);
+
   const mapRef = useRef(null);
 
-  const selectedFeature = useMemo(
-    () => parcels.find((p) => p.id === selectedParcel) || null,
-    [selectedParcel, parcels]
-  );
+  // Harita instance'ını garantiye almak için custom bir component
+  function MapRefSync() {
+    const map = useMap();
+    mapRef.current = map;
+    return null;
+  }
 
+  // Tekli seçimde seçili parsele uç
   useEffect(() => {
-    if (selectedFeature && mapRef.current) {
-      const bounds = L.latLngBounds(selectedFeature.koordinatlar);
-      mapRef.current.flyToBounds(bounds, {
-        padding: [50, 50],
-        duration: 0.3,
-        maxZoom: 18,
-      });
+    if (!mapRef.current) return;
+    if (!selectedParcel) return;
+    const p = parcels.find((x) => x.id === selectedParcel);
+    if (!p) return;
+    const bounds = L.latLngBounds(p.koordinatlar);
+    mapRef.current.flyToBounds(bounds, {
+      padding: [50, 50],
+      duration: 0.35,
+      maxZoom: 17,
+    });
+  }, [selectedParcel, parcels]);
+
+  // Tümünü seç fonksiyonu
+  const handleSelectAll = () => {
+    if (!groupMode) return;
+    const allIds = parcels.map((p) => p.id);
+    if (typeof setGroupMode === 'function') setGroupMode(true); // ensure groupMode
+    if (typeof toggleGroupParcel === 'function') {
+      // If toggleGroupParcel can accept array, but likely not. So set groupedParcels directly if possible.
+      // But groupedParcels is from context, so we need a setter. Let's check for setGroupedParcels.
+      if (typeof window !== 'undefined' && window.ParcelContext && typeof window.ParcelContext.setGroupedParcels === 'function') {
+        window.ParcelContext.setGroupedParcels(allIds);
+      } else if (typeof setSelectedParcel === 'function') {
+        // fallback: select all by toggling each not selected
+        allIds.forEach((id) => {
+          if (!groupedParcels.includes(id)) toggleGroupParcel(id);
+        });
+      }
     }
-  }, [selectedFeature]);
-
-  useEffect(() => {
-    const onResize = () => mapRef.current?.invalidateSize();
-    window.addEventListener("resize", onResize);
-    window.addEventListener("orientationchange", onResize);
-    document.addEventListener("visibilitychange", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("orientationchange", onResize);
-      document.removeEventListener("visibilitychange", onResize);
-    };
-  }, []);
-
-  const baseStyle = { color: "blue", weight: 2 };
-  const selStyle = { color: "red", weight: 4 };
+    // If context exposes setGroupedParcels, use it instead for better performance
+    if (typeof setGroupedParcels === 'function') setGroupedParcels(allIds);
+  };
 
   return (
-    <>
+    <div
+      className="map-root"
+      style={{ height: "100%", width: "100%", position: "relative" }}
+    >
+      {/* Grupla butonu (zoom butonlarının yanında) */}
+      <div className="group-toggle" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {groupMode && (
+          <button
+            type="button"
+            className="group-select-all-btn"
+            style={{ padding: '2px 10px', fontSize: 13, background: '#222', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+            onClick={handleSelectAll}
+          >
+            Tümünü Seç
+          </button>
+        )}
+        <label className="group-toggle-inner" style={{ margin: 0 }}>
+          <input
+            type="checkbox"
+            checked={groupMode}
+            onChange={(e) => setGroupMode(e.target.checked)}
+          />
+          <span>Seç</span>
+        </label>
+      </div>
+
       <LeafletMap
-        className="leaflet-container"
-        center={[38.2698378125, 27.3990990625]}
-        zoom={17}
+        center={[38.26984, 27.3991]}
+        zoom={16}
         minZoom={1}
         maxZoom={21}
-        whenCreated={(map) => (mapRef.current = map)}
+        style={{ height: "100%", width: "100%" }}
+        zoomControl={false}
       >
-        {/* Uydu (Esri) */}
+        <MapRefSync />
         <TileLayer
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          attribution="Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+          attribution="Tiles © Esri"
           maxNativeZoom={18}
           maxZoom={21}
         />
 
-        {/* Boş alana tıklandığında seçim temizle */}
-        <MapClickClear onClick={() => setSelectedParcel(null)} />
+        {parcels.map((parsel) => {
+          const isSelected = groupMode
+            ? groupedParcels.includes(parsel.id)
+            : parsel.id === selectedParcel;
 
-        {/* Parseller */}
-        {parcels.map((p) => (
-          <Polygon
-            key={p.id}
-            positions={p.koordinatlar}
-            /* 🔑 bubbling kapalı: poligona tıklayınca Map click çalışmaz */
-            pathOptions={{
-              ...(selectedParcel === p.id ? selStyle : baseStyle),
-              bubblingMouseEvents: false,
-            }}
-            eventHandlers={{
-              click: (e) => {
-                // 🔒 DOM event’ini kesin durdur
-                if (e?.originalEvent) {
-                  e.originalEvent.preventDefault?.();
-                  e.originalEvent.stopPropagation?.();
-                  // Leaflet helper (DOM event ile kullan)
-                  L.DomEvent.stop(e.originalEvent);
-                }
-                setSelectedParcel(p.id);
-              },
-            }}
-          />
-        ))}
+          return (
+            <Polygon
+              key={parsel.id}
+              positions={parsel.koordinatlar}
+              pathOptions={isSelected ? strokeSelected : strokeDefault}
+              eventHandlers={{
+                click: () => {
+                  if (groupMode) {
+                    toggleGroupParcel(parsel.id);
+                  } else {
+                    setSelectedParcel(parsel.id);
+                  }
+                },
+              }}
+            />
+          );
+        })}
       </LeafletMap>
-
-      {/* Sol üst logo (tamamen geçişli) */}
+            {/* Sol üst logo (tamamen geçişli) */}
       <div className="map-brand">
         <img src={logo} alt="Logo" />
       </div>
-
-      {/* Alt bilgi çubuğu */}
-      <SelectedAreaInfo parcel={selectedFeature} />
-    </>
+    </div>
   );
 }

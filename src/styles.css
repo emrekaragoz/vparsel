@@ -471,15 +471,19 @@ body,
 }
 /* Panel genel (kompakt, sans-serif, normal boyutlar) */
 .sai-panel {
-  font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Roboto,
-    Arial, sans-serif;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  background: rgba(34, 40, 49, 0.5); /* antrasit ve yarı şeffaf */
+  border: 1px solid #222831;
   border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.13);
   padding: 6px 12px;
-  max-height: 40vh;
+  max-height: 50vh;
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  backdrop-filter: blur(2px);
+  transition: background 0.2s;
 }
 .sai-head {
   font-weight: 700;
@@ -490,18 +494,27 @@ body,
 
 .sai-card {
   background: #fff;
-  border-radius: 8px;
-  padding: px;
+  border-radius: 10px;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .sai-card-title {
   color: #6b7280;
   font-weight: 600;
   font-size: 12px;
-  margin-bottom: 4px;
+  margin-bottom: 0;
+  text-align: center;
 }
 .sai-card-body {
-  font-size: 15px;
+  font-size: 14px;
   color: #111827;
+  text-align: center;
+  margin: 0;
 }
 
 /* 🔹 3’lü üst satır: Tanım • Parsel • Dönüm */
@@ -535,7 +548,7 @@ body,
   padding: 1px 1;
 }
 .sai-kv .key {
-  color: #6b7280;
+    color: #6b7280;
   font-weight: 600;
   font-size: 10px;
 }
@@ -547,9 +560,9 @@ body,
 
 /* Dönüm metrikleri (normal boy) */
 .sai-metric {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
-  line-height: 1.1;
+  line-height: 1;
   color: #0f172a;
 }
 .sai-sub {
@@ -707,10 +720,11 @@ body,
   width: min(92vw, 720px);
   max-height: 70vh;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: rgba(250, 250, 250, 0.82);
+  border: 1px solid #222831;
   border-radius: 12px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.13);
   display: flex;
   flex-direction: column;
 }
@@ -753,6 +767,7 @@ body,
   background: #fff;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
+  font-family: sans-serif;
 }
 .plist-item + .plist-item {
   margin-top: 8px;
@@ -785,4 +800,228 @@ body,
   background: #fff;
   color: #111827;
 }
+  .pill-inline.doluluk {
+    background: rgba(34, 40, 49, 0.92);
+    border-color: #2563eb;
+    color: #2563eb;
+    font-weight: 600;
+  }
+.pill-progress {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 60px; /* ihtiyaca göre 120–200px */
+  height: 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.pill-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: #c55622; /* JS ile override ediliyor */
+  transition: width 180ms ease-in-out;
+}
+
+.pill-progress-label {
+  position: relative; /* label üstte kalsın */
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+}
+
 /* ===== /Parsel Listeleri Modal ===== */
+/* === Splash overlay (resim2.webp) === */
+.splash-root {
+  position: fixed;
+  inset: 0;
+  z-index: 10050; /* panelin üstünde, UI’yi engellemesin */
+  pointer-events: none; /* tıklamayı bloklamasın */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splash-img {
+  width: min(60vw, 520px);
+  height: auto;
+  opacity: 0;
+  transform: scale(0.96);
+  animation: splash-pop 900ms ease-out forwards; /* giriş animasyonu */
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.18));
+}
+/* 3 metrik yan yana kart gibi */
+.sai-row-3.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Her Section zaten sai-card ama metrik kartlarına özel stil */
+.sai-row-3.metrics .sai-card {
+  background: linear-gradient(180deg, #f9fafb 0%, #ffffff 60%);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Başlık */
+.sai-row-3.metrics .sai-card-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+/* Değer */
+.sai-row-3.metrics .sai-metric {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* İstersen değerleri ortalayabilirsin (opsiyonel) */
+/*
+.sai-row-3.metrics .sai-card-body{
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* İstersen hafif gecikmeli fade-out eklemek için ikinci animasyonu zincirleyebilirsin:
+   animation: splash-pop 700ms ease-out forwards, splash-fade 1200ms ease-out 900ms forwards; */
+
+@keyframes splash-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes splash-fade {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* Grupla toggle (zoom butonlarının yanında) */
+.group-toggle {
+  position: absolute;
+  top: var(--leaflet-zoom-margin, 10px);
+  right: var(--leaflet-zoom-margin, 10px);
+  z-index: 1005;
+}
+.group-toggle-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 5px;
+  border: 1px solid #222831;
+  border-radius: 5px;
+  background: rgba(34, 40, 49, 0.52); /* antrasit ve şeffaf */
+  backdrop-filter: blur(2px);
+  font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Roboto,
+    Arial, sans-serif;
+  font-size: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.group-toggle-inner:hover {
+  background: #2b2c2c; /* hoverda hafif gri */
+}
+.group-toggle input {
+  accent-color: #2563eb;
+}
+
+.group-toggle input {
+  accent-color: #2563eb;
+}
+.group-hint {
+  margin-top: 6px;
+  padding: 4px 6px;
+  font-size: 11px;
+  color: #374151;
+  background: #ffffffb3;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+/* 3 metrik kart görünümü (zaten eklediysen tekrar ekleme) */
+.sai-row-3.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+.sai-row-3.metrics .sai-card {
+  background: linear-gradient(180deg, #f9fafb 0%, #ffffff 60%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+.sai-row-3.metrics .sai-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+.sai-row-3.metrics .sai-metric {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Progress pill (doluluk) — varsa tekrar eklemeye gerek yok */
+.pill-progress {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 62px;
+  height: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  overflow: hidden;
+}
+.pill-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: #22c55e;
+  transition: width 180ms ease-in-out;
+}
+.pill-progress-label {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+}
