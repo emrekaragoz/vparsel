@@ -32,11 +32,10 @@ function Section({ title, children, className = "" }) {
 
 export default function SelectedAreaInfo({ parcel }) {
   const { parcels } = useParcels();
-  const { setSelectedParcel, groupMode, groupedParcels } =
-    useContext(ParcelContext);
+  const { selectedParcel, setSelectedParcel, groupMode, groupedParcels } = useContext(ParcelContext);
 
   const [openList, setOpenList] = useState(false);
-
+  
   // ===== DRAG (logodan tut) =====
   const [offset, setOffset] = useState(0);
   const [dragging, setDragging] = useState(false);

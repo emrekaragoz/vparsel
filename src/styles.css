@@ -767,6 +767,7 @@ body,
   background: #fff;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
+  font-family: sans-serif;
 }
 .plist-item + .plist-item {
   margin-top: 8px;
