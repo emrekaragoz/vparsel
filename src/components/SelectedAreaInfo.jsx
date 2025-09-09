@@ -247,6 +247,7 @@ export default function SelectedAreaInfo({ parcel }) {
                     </div>
                   </Section>
                 </div>
+
                 {/* 3 metrik: Dönüme düşen • Dikilebilir • Doluluk */}
                 <div className="sai-row-3">
                   <Section title="Dönüme Düşen Ağaç">
@@ -406,4 +407,3 @@ export default function SelectedAreaInfo({ parcel }) {
     </div>
   );
 }
-
