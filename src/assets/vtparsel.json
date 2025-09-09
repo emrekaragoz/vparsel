@@ -2881,5 +2881,96 @@
         "kalamat": 0
       }
     }
+  },
+
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [[[27.40099, 38.27382]]]
+    },
+    "properties": {
+      "ilceAd": "Torbalı",
+      "mevkii": "Kocaalan",
+      "ilId": 57,
+      "durum": "1",
+      "ilceId": 562,
+      "zeminKmdurum": "Ana Taşınmaz",
+      "parselNo": "12",
+      "mahalleAd": "Karakızlar",
+      "ozet": "Karakızlar-130/12",
+      "gittigiParselListe": "",
+      "gittigiParselSebep": "",
+      "alan": "23.342,58",
+      "adaNo": "130",
+      "nitelik": "İçerisinde Bağ Evi Ve Zeytin İşletme Tesisi Olan Zeytinli Tarla",
+      "ilAd": "İzmir",
+      "mahalleId": 166683,
+      "pafta": "L18-B-24-D-1, L18-B-23-C-2, L18-B-24-A-4, L18-B-23"
+    },
+    "info": {
+      "tanim": "Bağ Evi 130 12",
+      "agac": {
+        "memecik": 51,
+        "gemlik": 121,
+        "ayvalik": 144,
+        "domat": 4,
+        "kalamat": 0
+      },
+      "fidan": {
+        "memecik": 0,
+        "gemlik": 50
+        "ayvalik": 0,
+        "domat": 0,
+        "kalamat": 0
+      }
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [[[27.39497, 38.26827]]]
+    },
+    "properties": {
+      "ilceAd": "Torbalı",
+      "mevkii": "Kocaalan",
+      "ilId": 57,
+      "durum": "1",
+      "ilceId": 562,
+      "zeminKmdurum": "Ana Taşınmaz",
+      "parselNo": "12-13-14",
+      "mahalleAd": "Karakızlar",
+      "ozet": "Karakızlar-149/12-13-14",
+      "gittigiParselListe": "",
+      "gittigiParselSebep": "",
+      "alan": "13.048,60",
+      "adaNo": "149",
+      "nitelik": "Zeytinlik",
+      "ilAd": "İzmir",
+      "mahalleId": 166683,
+      "pafta": "L18-B-23-C-2"
+    },
+    "info": {
+      "tanim": "Tel örgü Dere arası",
+      "agac": {
+        "memecik": 201,
+        "gemlik": 1,
+        "ayvalik": 0,
+        "domat": 0,
+        "kalamat": 0
+      },
+      "fidan": {
+        "memecik": 0,
+        "gemlik": 0,
+        "ayvalik": 0,
+        "domat": 0,
+        "kalamat": 0
+      }
+    }
   }
 ]
+
+
+
+
