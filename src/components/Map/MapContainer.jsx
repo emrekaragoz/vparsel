@@ -43,14 +43,45 @@ export default function MapContainer() {
     });
   }, [selectedParcel, parcels]);
 
+  // Tümünü seç fonksiyonu
+  const handleSelectAll = () => {
+    if (!groupMode) return;
+    const allIds = parcels.map((p) => p.id);
+    if (typeof setGroupMode === 'function') setGroupMode(true); // ensure groupMode
+    if (typeof toggleGroupParcel === 'function') {
+      // If toggleGroupParcel can accept array, but likely not. So set groupedParcels directly if possible.
+      // But groupedParcels is from context, so we need a setter. Let's check for setGroupedParcels.
+      if (typeof window !== 'undefined' && window.ParcelContext && typeof window.ParcelContext.setGroupedParcels === 'function') {
+        window.ParcelContext.setGroupedParcels(allIds);
+      } else if (typeof setSelectedParcel === 'function') {
+        // fallback: select all by toggling each not selected
+        allIds.forEach((id) => {
+          if (!groupedParcels.includes(id)) toggleGroupParcel(id);
+        });
+      }
+    }
+    // If context exposes setGroupedParcels, use it instead for better performance
+    if (typeof setGroupedParcels === 'function') setGroupedParcels(allIds);
+  };
+
   return (
     <div
       className="map-root"
       style={{ height: "100%", width: "100%", position: "relative" }}
     >
       {/* Grupla butonu (zoom butonlarının yanında) */}
-      <div className="group-toggle">
-        <label className="group-toggle-inner">
+      <div className="group-toggle" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {groupMode && (
+          <button
+            type="button"
+            className="group-select-all-btn"
+            style={{ padding: '2px 10px', fontSize: 13, background: '#222', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+            onClick={handleSelectAll}
+          >
+            Tümünü Seç
+          </button>
+        )}
+        <label className="group-toggle-inner" style={{ margin: 0 }}>
           <input
             type="checkbox"
             checked={groupMode}
