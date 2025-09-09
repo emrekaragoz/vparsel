@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import MapContainer from "./components/Map/MapContainer.jsx";
 import SelectedAreaInfo from "./components/SelectedAreaInfo.jsx";
 import { ParcelProvider, ParcelContext } from "./contexts/ParcelContext.jsx";
 import useParcels from "./hooks/useParcels.js";
+import LoadingSplash from "./LoadingSplash.jsx";
 
 function Shell() {
   const { parcels } = useParcels();
@@ -22,8 +23,14 @@ function Shell() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <div className="app-root">
+      {showSplash && <LoadingSplash minDuration={2000} />}
       <ParcelProvider>
         <Shell />
       </ParcelProvider>

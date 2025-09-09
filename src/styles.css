@@ -1,3 +1,87 @@
+/* Splash dot-dot-dot loading */
+.splash-dots {
+  margin-top: 18px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1976d2;
+  letter-spacing: 0.18em;
+  text-align: center;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2.5rem;
+}
+.splash-dot {
+  opacity: 0.2;
+  animation: splash-dot-fade 1.2s infinite;
+  margin: 0 0.08em;
+}
+.splash-dot:nth-child(1) { animation-delay: 0s; }
+.splash-dot:nth-child(2) { animation-delay: 0.25s; }
+.splash-dot:nth-child(3) { animation-delay: 0.5s; }
+
+@keyframes splash-dot-fade {
+  0%, 80%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}
+/* Splash title */
+.splash-title {
+  margin-top: 18px;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #222222;
+  letter-spacing: 0.01em;
+  text-align: center;
+  font-family: sans-serif;
+  user-select: none;
+}
+/* Splash logo move animation */
+.splash-img-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transition: all 1.1s cubic-bezier(.4,0,.2,1);
+  position: relative;
+}
+.splash-img-move {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: 32px;
+  padding-top: 24px;
+  width: 100vw;
+  height: 100vh;
+}
+.splash-img-move .splash-img {
+  width: 80px !important;
+  min-width: 60px;
+  max-width: 90px;
+  transition: width 1.1s cubic-bezier(.4,0,.2,1);
+}
+.splash-img-move .splash-spinner {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+/* Splash loading spinner */
+.splash-spinner {
+  margin-top: 32px;
+  width: 44px;
+  height: 44px;
+  border: 4px solid #e0e0e0;
+  border-top: 4px solid #1976d2;
+  border-radius: 50%;
+  animation: splash-spin 1s linear infinite;
+  box-sizing: border-box;
+}
+
+@keyframes splash-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 /* ====== İSKELET ====== */
 html,
 body,
@@ -840,14 +924,23 @@ body,
 
 /* ===== /Parsel Listeleri Modal ===== */
 /* === Splash overlay (resim2.webp) === */
+
 .splash-root {
   position: fixed;
   inset: 0;
-  z-index: 10050; /* panelin üstünde, UI’yi engellemesin */
-  pointer-events: none; /* tıklamayı bloklamasın */
+  z-index: 10050;
+  pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #fff;
+  transition: opacity 1.1s cubic-bezier(.4,0,.2,1);
+  opacity: 1;
+}
+
+.splash-root.splash-fadeout {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .splash-img {
