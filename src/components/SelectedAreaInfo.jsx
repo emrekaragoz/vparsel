@@ -184,7 +184,7 @@ export default function SelectedAreaInfo({ parcel }) {
                     </div>
                   </Section>
 
-                  <Section title="Parsel Bilgisi">
+                  <Section title="">
                     <div className="sai-kv">
                       <div>
                         <span className="key">Mahalle</span>
@@ -201,7 +201,7 @@ export default function SelectedAreaInfo({ parcel }) {
                     </div>
                   </Section>
 
-                  <Section title="Dönüm Bilgisi">
+                  <Section title="">
                     <div className="sai-metric">
                       {donumVal ? `${nfArea.format(donumVal)} dönüm` : "-"}
                     </div>
@@ -211,10 +211,28 @@ export default function SelectedAreaInfo({ parcel }) {
                   </Section>
                 </div>
 
+                {/* 3 metrik: Dönüme düşen • Dikilebilir • Doluluk */}
+                <div className="sai-row-3">
+                  <Section title="Dönüme Düşen Ağaç">
+                    <div className="sai-metric">
+                      {donumVal ? nfArea.format(treesPerDonum) : "-"}
+                    </div>
+                  </Section>
+                  <Section title="Kaç Fidan Dikilebilir?">
+                    <div className="sai-metric">
+                      {nfInt.format(plantableCount)}
+                    </div>
+                  </Section>
+                  <Section title="Doluluk">
+                    <div className="sai-metric">
+                      {nfArea.format(occupancyPct)}%
+                    </div>
+                  </Section>
+                </div>
                 {/* Ağaç • Fidan (birleşik listeler) */}
                 <div className="sai-row">
                   <Section
-                    title={`Ağaç • Toplam ${nfInt.format(combined.agacToplam)}`}
+                    title={`🌳Ağaç • Toplam ${nfInt.format(combined.agacToplam)}`}
                   >
                     {combined.agacList.length ? (
                       <ul className="sai-list">
@@ -235,7 +253,7 @@ export default function SelectedAreaInfo({ parcel }) {
                   </Section>
 
                   <Section
-                    title={`Fidan • Toplam ${nfInt.format(
+                    title={`🌱Fidan • Toplam ${nfInt.format(
                       combined.fidanToplam
                     )}`}
                   >
@@ -258,24 +276,6 @@ export default function SelectedAreaInfo({ parcel }) {
                   </Section>
                 </div>
 
-                {/* 3 metrik: Dönüme düşen • Dikilebilir • Doluluk */}
-                <div className="sai-row-3 metrics">
-                  <Section title="Dönüme Düşen Ağaç Sayısı">
-                    <div className="sai-metric">
-                      {donumVal ? nfArea.format(treesPerDonum) : "-"}
-                    </div>
-                  </Section>
-                  <Section title="Kaç Fidan Dikilebilir?">
-                    <div className="sai-metric">
-                      {nfInt.format(plantableCount)}
-                    </div>
-                  </Section>
-                  <Section title="Doluluk">
-                    <div className="sai-metric">
-                      {nfArea.format(occupancyPct)}%
-                    </div>
-                  </Section>
-                </div>
               </>
             ) : (
               <div className="sai-empty">
