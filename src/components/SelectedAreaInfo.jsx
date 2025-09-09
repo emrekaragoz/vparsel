@@ -126,17 +126,55 @@ export default function SelectedAreaInfo({ parcel }) {
   const parselNo = firstProps.parselNo ?? firstProps.parsel ?? "-";
   const tanim = infoFirst.tanim || firstProps.tanim || "-";
 
-  // Metrikler
-  const donumVal = combined.alanM2 > 0 ? combined.alanM2 / 1000 : 0;
-  const totalTrees = combined.agacToplam + combined.fidanToplam;
-
+  // Metrikler (tekli ve grup için farklı hesaplama)
   const AVG_TREE_AREA_M2 = 36; // ihtiyaca göre değiştir
-  const usedArea = totalTrees * AVG_TREE_AREA_M2;
-  const freeArea = Math.max(0, combined.alanM2 - usedArea);
-  const plantableCount = Math.floor(freeArea / AVG_TREE_AREA_M2);
-  const treesPerDonum = donumVal > 0 ? totalTrees / donumVal : 0;
-  const occupancyPct =
-    combined.alanM2 > 0 ? Math.min(100, (usedArea / combined.alanM2) * 100) : 0;
+  let donumVal = 0;
+  let totalTrees = 0;
+  let plantableCount = 0;
+  let treesPerDonum = 0;
+  let occupancyPct = 0;
+
+  if (groupMode && selectedList.length > 1) {
+    // Grup seçimi: her metrik ayrı ayrı hesaplanıp ortalanacak/toplanacak
+    let donumSum = 0;
+    let treesPerDonumSum = 0;
+    let occupancySum = 0;
+    let plantableSum = 0;
+    let validCount = 0;
+    selectedList.forEach((p) => {
+      const props = p.properties ?? p ?? {};
+      const info = p.info ?? {};
+      const alanM2 = toFloatFlexible(props.alan ?? p.alan);
+      const donum = alanM2 > 0 ? alanM2 / 1000 : 0;
+      const agacTop = Object.values(info.agac || {}).reduce((s, v) => s + toFloatFlexible(v), 0);
+      const fidanTop = Object.values(info.fidan || {}).reduce((s, v) => s + toFloatFlexible(v), 0);
+      const total = agacTop + fidanTop;
+      const used = total * AVG_TREE_AREA_M2;
+      const free = Math.max(0, alanM2 - used);
+      const plantable = Math.floor(free / AVG_TREE_AREA_M2);
+      const tpd = donum > 0 ? total / donum : 0;
+      const occ = alanM2 > 0 ? Math.min(100, (used / alanM2) * 100) : 0;
+      donumSum += donum;
+      treesPerDonumSum += tpd;
+      occupancySum += occ;
+      plantableSum += plantable;
+      validCount++;
+    });
+    donumVal = donumSum;
+    treesPerDonum = validCount > 0 ? treesPerDonumSum / validCount : 0;
+    occupancyPct = validCount > 0 ? occupancySum / validCount : 0;
+    plantableCount = plantableSum; // SUM for group
+    totalTrees = combined.agacToplam + combined.fidanToplam;
+  } else {
+    // Tekli veya tekli grup
+    donumVal = combined.alanM2 > 0 ? combined.alanM2 / 1000 : 0;
+    totalTrees = combined.agacToplam + combined.fidanToplam;
+    const usedArea = totalTrees * AVG_TREE_AREA_M2;
+    const freeArea = Math.max(0, combined.alanM2 - usedArea);
+    plantableCount = Math.floor(freeArea / AVG_TREE_AREA_M2);
+    treesPerDonum = donumVal > 0 ? totalTrees / donumVal : 0;
+    occupancyPct = combined.alanM2 > 0 ? Math.min(100, (usedArea / combined.alanM2) * 100) : 0;
+  }
 
   return (
     <div
