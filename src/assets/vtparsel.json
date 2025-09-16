@@ -76,26 +76,13 @@
       ]
     },
     "properties": {
-      "ilceAd": "Torbalı",
-      "mevkii": "Kocaalan",
-      "ilId": 57,
-      "durum": "1",
-      "ilceId": 562,
-      "zeminKmdurum": "Ana Taşınmaz",
+      "tanim": "Çiftlik",
       "parselNo": "5-6-8-9-10-11",
       "mahalleAd": "Karakızlar",
-      "ozet": "Karakızlar-149/5 * 149/6 * 149/8 * 149/9 * 149/10 * 149/11",
-      "gittigiParselListe": "",
-      "gittigiParselSebep": "",
       "alan": "70.898,00",
       "adaNo": "149",
-      "nitelik": "İki Katlı Prefabrik Zeytin Yağ Fabrikası, Tek Katlı Çelik Prina Deposu Ve Zeytinlik",
-      "ilAd": "İzmir",
-      "mahalleId": 166683,
-      "pafta": "L18-B-24-D-1, L18-B-23-C-2, L18-B-24-D-1-A"
     },
     "info": {
-      "tanim": "Çiftlik",
       "agac": {
         "memecik": 505,
         "gemlik": 346,
@@ -109,7 +96,108 @@
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
-      }
+      },
+      "ilaclama": [
+        {
+          "marka": "CopperMax",
+          "miktar": 25,
+          "not": "Yaprak lekesi önleme",
+          "tarih": "2025-03-15",
+          "durum": "Yapıldı"
+        },
+        {
+          "marka": "InsectoSafe",
+          "miktar": 18,
+          "not": "Zeytin sineği yoğunluğu orta",
+          "tarih": "2025-05-02",
+          "durum": "Yapıldı"
+        },
+        {
+          "marka": "FungiShield",
+          "miktar": 20,
+          "not": "Yağış sonrası tekrar önerilir",
+          "tarih": "2025-10-01",
+          "durum": "Beklemede"
+        }
+      ],
+      "hasat": [
+        {
+          "tur": "memecik",
+          "hasatKg": 8200,
+          "not": "Erken hasat",
+          "tarih": "2024-11-05",
+          "isciSayisi": 14,
+          "calisilanSaat": 7.5,
+          "cikanYag": 1360,
+          "verim": "16.6%"
+        },
+        {
+          "tur": "gemlik",
+          "hasatKg": 6100,
+          "not": "Standart olgunluk",
+          "tarih": "2024-11-12",
+          "isciSayisi": 10,
+          "calisilanSaat": 6.0,
+          "cikanYag": 890,
+          "verim": "14.6%"
+        },
+        {
+          "tur": "memecik",
+          "hasatKg": 4500,
+          "not": "Geç hasat",
+          "tarih": "2024-12-01",
+          "isciSayisi": 8,
+          "calisilanSaat": 5.5,
+          "cikanYag": 700,
+          "verim": "15.6%"
+        }
+      ],
+      "sayim": [
+        {
+          "tur": "memecik",
+          "agac": 505,
+          "fidan": 15,
+          "toplam": 520,
+          "tarih": "2025-01-15"
+        },
+        {
+          "tur": "gemlik",
+          "agac": 346,
+          "fidan": 29,
+          "toplam": 375,
+          "tarih": "2025-01-15"
+        },
+        {
+          "tur": "ayvalik",
+          "agac": 0,
+          "fidan": 0,
+          "toplam": 0,
+          "tarih": "2025-01-15"
+        }
+      ],
+      "gubre": [
+        {
+          "gubreCinsi": "NPK 15-15-15",
+          "miktar": 1200,
+          "not": "İlkbahar taban gübresi",
+          "tarih": "2025-03-10",
+          "durum": "Yapıldı"
+        },
+        {
+          "gubreCinsi": "Üre",
+          "miktar": 800,
+          "not": "Azot takviyesi",
+          "tarih": "2025-04-20",
+          "durum": "Yapıldı"
+        },
+        {
+          "gubreCinsi": "Potasyum Sülfat",
+          "miktar": 500,
+          "not": "Meyve kalitesi",
+          "tarih": "2025-08-05",
+          "durum": "Beklemede"
+        }
+      ]
     }
   },
   {
@@ -168,21 +256,101 @@
       "pafta": "L18-B-23-C-2"
     },
     "info": {
-      "tanim": "Ofis Karşısı",
+      "tanim": "Çiftlik",
       "agac": {
-        "memecik": 44,
-        "gemlik": 57,
-        "ayvalik": 218,
+        "memecik": 505,
+        "gemlik": 346,
+        "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 15,
+        "gemlik": 29,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
-      }
+      },
+      "ilaclama": [
+        {
+          "marka": "CopperMax",
+          "miktar": 25,
+          "not": "Yaprak lekesi önleme",
+          "tarih": "2025-03-15",
+          "durum": "Zamanı Geçti"
+        }
+      ],
+      "hasat": [
+        {
+          "tur": "memecik",
+          "hasatKg": 8200,
+          "not": "Erken hasat",
+          "tarih": "2024-11-05",
+          "isciSayisi": 14,
+          "calisilanSaat": 7.5,
+          "cikanYag": 1360,
+          "verim": "16.6%"
+        },
+        {
+          "tur": "gemlik",
+          "hasatKg": 6100,
+          "not": "Standart olgunluk",
+          "tarih": "2024-11-12",
+          "isciSayisi": 10,
+          "calisilanSaat": 6.0,
+          "cikanYag": 890,
+          "verim": "14.6%"
+        },
+        {
+          "tur": "memecik",
+          "hasatKg": 4500,
+          "not": "Geç hasat",
+          "tarih": "2024-12-01",
+          "isciSayisi": 8,
+          "calisilanSaat": 5.5,
+          "cikanYag": 700,
+          "verim": "15.6%"
+        }
+      ],
+      "sayim": [
+        {
+          "tur": "memecik",
+          "agac": 505,
+          "fidan": 15,
+          "toplam": 520,
+          "tarih": "2025-01-15"
+        },
+        {
+          "tur": "gemlik",
+          "agac": 346,
+          "fidan": 29,
+          "toplam": 375,
+          "tarih": "2025-01-15"
+        },
+        {
+          "tur": "ayvalik",
+          "agac": 0,
+          "fidan": 0,
+          "toplam": 0,
+          "tarih": "2025-01-15"
+        }
+      ],
+      "gubre": [
+        {
+          "gubreCinsi": "NPK 15-15-15",
+          "miktar": 1200,
+          "not": "İlkbahar taban gübresi",
+          "tarih": "2025-03-10",
+          "durum": "Yapıldı"
+        },
+        {
+          "gubreCinsi": "Üre",
+          "miktar": 800,
+          "not": "Azot takviyesi",
+          "tarih": "2025-04-20",
+          "durum": "Yapıldı"
+        }
+      ]
     }
   },
   {
@@ -330,21 +498,101 @@
       "pafta": "L18-B-24-D-1, L18-B-23-C-2"
     },
     "info": {
-      "tanim": "Otele göre sağ tarafı",
+      "tanim": "Çiftlik",
       "agac": {
-        "memecik": 0,
-        "gemlik": 431,
+        "memecik": 505,
+        "gemlik": 346,
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
       },
       "fidan": {
-        "memecik": 0,
-        "gemlik": 0,
+        "memecik": 15,
+        "gemlik": 29,
         "ayvalik": 0,
         "domat": 0,
-        "ispanyol": 345
-      }
+        "kalamat": 0
+      },
+      "ilaclama": [
+        {
+          "marka": "CopperMax",
+          "miktar": 25,
+          "not": "Yaprak lekesi önleme",
+          "tarih": "2025-03-15",
+          "durum": "Yapıldı"
+        }
+      ],
+      "hasat": [
+        {
+          "tur": "memecik",
+          "hasatKg": 8200,
+          "not": "Erken hasat",
+          "tarih": "2024-11-05",
+          "isciSayisi": 14,
+          "calisilanSaat": 7.5,
+          "cikanYag": 1360,
+          "verim": "16.6%"
+        },
+        {
+          "tur": "gemlik",
+          "hasatKg": 6100,
+          "not": "Standart olgunluk",
+          "tarih": "2024-11-12",
+          "isciSayisi": 10,
+          "calisilanSaat": 6.0,
+          "cikanYag": 890,
+          "verim": "14.6%"
+        },
+        {
+          "tur": "memecik",
+          "hasatKg": 4500,
+          "not": "Geç hasat",
+          "tarih": "2024-12-01",
+          "isciSayisi": 8,
+          "calisilanSaat": 5.5,
+          "cikanYag": 700,
+          "verim": "15.6%"
+        }
+      ],
+      "sayim": [
+        {
+          "tur": "memecik",
+          "agac": 505,
+          "fidan": 15,
+          "toplam": 520,
+          "tarih": "2025-01-15"
+        },
+        {
+          "tur": "gemlik",
+          "agac": 346,
+          "fidan": 29,
+          "toplam": 375,
+          "tarih": "2025-01-15"
+        },
+        {
+          "tur": "ayvalik",
+          "agac": 0,
+          "fidan": 0,
+          "toplam": 0,
+          "tarih": "2025-01-15"
+        }
+      ],
+      "gubre": [
+        {
+          "gubreCinsi": "NPK 15-15-15",
+          "miktar": 1200,
+          "not": "İlkbahar taban gübresi",
+          "tarih": "2025-03-10",
+          "durum": "Yapıldı"
+        },
+        {
+          "gubreCinsi": "Üre",
+          "miktar": 800,
+          "not": "Azot takviyesi",
+          "tarih": "2025-04-20",
+          "durum": "Yapıldı"
+        }
+      ]
     }
   },
   {

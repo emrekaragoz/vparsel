@@ -1,8 +1,8 @@
-import React, { useMemo, useState, useContext, useRef, useEffect } from "react";
+import React, { useMemo, useContext } from "react";
 import useParcels from "../hooks/useParcels.js";
 import { ParcelContext } from "../contexts/ParcelContext.jsx";
-import logo from "../assets/resim.webp";
 
+/* ---------- Yardımcılar ---------- */
 const toFloatFlexible = (v) => {
   if (typeof v === "number") return v;
   if (v == null) return 0;
@@ -17,10 +17,209 @@ const toFloatFlexible = (v) => {
   const cleaned = s.replace(/,/g, "").replace(/[^\d.-]/g, "");
   return parseFloat(cleaned) || 0;
 };
-
 const nfInt = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const nfArea = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2 });
 
+const joinText = (arr) =>
+  Array.from(
+    new Set(
+      (arr || [])
+        .map((s) => (s == null ? "" : String(s).trim()))
+        .filter(Boolean)
+    )
+  ).join(" / ");
+
+const rangeText = (arr) => {
+  const dates = (arr || []).filter(Boolean);
+  if (!dates.length) return "-";
+  const sorted = [...dates].sort((a, b) => new Date(a) - new Date(b));
+  return sorted.length === 1
+    ? sorted[0]
+    : `${sorted[0]} – ${sorted[sorted.length - 1]}`;
+};
+
+/* ---------- Mod tanımları (kolon etiketleri) ---------- */
+const MODE_DEFS = {
+  ilac: {
+    title: "İlaçlama Bilgisi",
+    columns: [
+      "İlaç Marka",
+      "Miktar",
+      "Gözlem / Not",
+      "Tarih",
+      "Durum(Yapıldı,Beklemede,Zamanı Geçti)",
+    ],
+  },
+  hasat: {
+    title: "Hasat Haritası",
+    columns: [
+      "Tür",
+      "HasatKg",
+      "Gözlem/Not",
+      "Tarih",
+      "İşçiSayısı",
+      "ÇalışılanSaat",
+      "ÇıkanYağ",
+      "Verim",
+    ],
+  },
+  sayim: {
+    title: "Sayım Bilgisi",
+    columns: ["Tür", "Ağaç", "Fidan", "Toplam", "Tarih"],
+  },
+  gubre: {
+    title: "Gübreleme",
+    columns: [
+      "Gübre Cinsi",
+      "Miktar",
+      "Gözlem/Not",
+      "Tarih",
+      "Durum(Yapıldı,Beklemede,Zamanı Geçti)",
+    ],
+  },
+};
+
+/* ---------- Özet hesaplayıcılar (çok kayıt → tek satır) ---------- */
+function summarizeIlac(list) {
+  const marka = [];
+  const notlar = [];
+  const tarihler = [];
+  const durumlar = [];
+  let miktarTop = 0;
+
+  list.forEach((p) => {
+    const src = p.info?.ilaclama || p.properties?.ilaclama || [];
+    (Array.isArray(src) ? src : []).forEach((e) => {
+      marka.push(e.marka ?? e.ilac);
+      notlar.push(e.not ?? e.gozlem);
+      tarihler.push(e.tarih);
+      durumlar.push(e.durum);
+      miktarTop += toFloatFlexible(e.miktar);
+    });
+  });
+
+  return {
+    "İlaç Marka": joinText(marka) || "-",
+    Miktar: miktarTop ? nfArea.format(miktarTop) : "-",
+    "Gözlem / Not": joinText(notlar) || "-",
+    Tarih: rangeText(tarihler),
+    "Durum(Yapıldı,Beklemede,Zamanı Geçti)": joinText(durumlar) || "-",
+  };
+}
+
+function summarizeHasat(list) {
+  const turler = [];
+  const notlar = [];
+  const tarihler = [];
+  let hasatKg = 0;
+  let isci = 0;
+  let saat = 0;
+  let cikanYag = 0;
+
+  list.forEach((p) => {
+    const src = p.info?.hasat || p.properties?.hasat || [];
+    (Array.isArray(src) ? src : []).forEach((e) => {
+      turler.push(e.urun ?? e.tur);
+      notlar.push(e.not ?? e.gozlem);
+      tarihler.push(e.tarih);
+      hasatKg += toFloatFlexible(e.miktar ?? e.hasatKg);
+      isci += toFloatFlexible(e.isci ?? e.isciSayisi);
+      saat += toFloatFlexible(e.saat ?? e.calisilanSaat);
+      cikanYag += toFloatFlexible(e.yag ?? e.cikanYag);
+    });
+  });
+
+  const verim =
+    hasatKg > 0 ? `${nfArea.format((cikanYag / hasatKg) * 100)}%` : "-";
+
+  return {
+    Tür: joinText(turler) || "-",
+    HasatKg: hasatKg ? nfInt.format(hasatKg) : "-",
+    "Gözlem/Not": joinText(notlar) || "-",
+    Tarih: rangeText(tarihler),
+    İşçiSayısı: isci ? nfInt.format(isci) : "-",
+    ÇalışılanSaat: saat ? nfArea.format(saat) : "-",
+    ÇıkanYağ: cikanYag ? nfInt.format(cikanYag) : "-",
+    Verim: verim,
+  };
+}
+
+function summarizeSayim(list) {
+  // Tür bazlı topla (agac + fidan). Tek satıra sığdırmak için toplamları birleştir.
+  const map = new Map(); // tur -> { agac, fidan }
+  const tarihler = [];
+
+  list.forEach((p) => {
+    const ag = p.info?.agac || {};
+    const fd = p.info?.fidan || {};
+    const t = p.info?.sayimTarih || p.properties?.sayimTarih;
+    if (t) tarihler.push(t);
+
+    for (const [k, v] of Object.entries(ag)) {
+      const n = toFloatFlexible(v);
+      const o = map.get(k) || { agac: 0, fidan: 0 };
+      o.agac += n;
+      map.set(k, o);
+    }
+    for (const [k, v] of Object.entries(fd)) {
+      const n = toFloatFlexible(v);
+      const o = map.get(k) || { agac: 0, fidan: 0 };
+      o.fidan += n;
+      map.set(k, o);
+    }
+  });
+
+  // En baskın türü özet satırına yaz (tek satır gereği)
+  const listAgg = Array.from(map.entries()).map(([tur, o]) => ({
+    tur,
+    agac: o.agac,
+    fidan: o.fidan,
+    toplam: o.agac + o.fidan,
+  }));
+  listAgg.sort((a, b) => b.toplam - a.toplam);
+
+  const best = listAgg[0];
+  const turText = best
+    ? `${best.tur.toUpperCase("tr-TR")} (Toplam ${nfInt.format(best.toplam)})`
+    : "-";
+
+  return {
+    Tür: turText,
+    Ağaç: best ? nfInt.format(best.agac) : "-",
+    Fidan: best ? nfInt.format(best.fidan) : "-",
+    Toplam: best ? nfInt.format(best.toplam) : "-",
+    Tarih: rangeText(tarihler),
+  };
+}
+
+function summarizeGubre(list) {
+  const cins = [];
+  const notlar = [];
+  const tarihler = [];
+  const durumlar = [];
+  let miktarTop = 0;
+
+  list.forEach((p) => {
+    const src = p.info?.gubre || p.properties?.gubre || [];
+    (Array.isArray(src) ? src : []).forEach((e) => {
+      cins.push(e.cins ?? e.cinsi ?? e.gubreCinsi);
+      notlar.push(e.not ?? e.gozlem);
+      tarihler.push(e.tarih);
+      durumlar.push(e.durum);
+      miktarTop += toFloatFlexible(e.miktar);
+    });
+  });
+
+  return {
+    "Gübre Cinsi": joinText(cins) || "-",
+    Miktar: miktarTop ? nfArea.format(miktarTop) : "-",
+    "Gözlem/Not": joinText(notlar) || "-",
+    Tarih: rangeText(tarihler),
+    "Durum(Yapıldı,Beklemede,Zamanı Geçti)": joinText(durumlar) || "-",
+  };
+}
+
+/* ---------- Basit kart bileşeni ---------- */
 function Section({ title, children, className = "" }) {
   return (
     <section className={`sai-card ${className}`}>
@@ -30,408 +229,126 @@ function Section({ title, children, className = "" }) {
   );
 }
 
+/* ======================= ANA BİLEŞEN ======================= */
 export default function SelectedAreaInfo({ parcel }) {
   const { parcels } = useParcels();
-  const { selectedParcel, setSelectedParcel, groupMode, groupedParcels } = useContext(ParcelContext);
+  const { groupMode, groupedParcels, mapMode } = useContext(ParcelContext);
 
-  const [openList, setOpenList] = useState(false);
-  // Parsel Listeleri arama çubuğu
-  const [searchTerm, setSearchTerm] = useState("");
-  const filteredParcels = useMemo(() => {
-    if (!searchTerm.trim()) return parcels;
-    const q = searchTerm.trim().toLowerCase();
-    return parcels.filter((p) => {
-      const pr = p.properties || {};
-      const tanim = (p.info && p.info.tanim) || pr.tanim || "";
-      const adaNo = pr.adaNo ?? p.ada ?? "";
-      const parNo = pr.parselNo ?? p.parsel ?? "";
-      return (
-        tanim.toLowerCase().includes(q) ||
-        String(adaNo).toLowerCase().includes(q) ||
-        String(parNo).toLowerCase().includes(q)
-      );
-    });
-  }, [searchTerm, parcels]);
-  
-  // ===== DRAG (logodan tut) =====
-  const [offset, setOffset] = useState(0);
-  const [dragging, setDragging] = useState(false);
-  const startYRef = useRef(0);
-  const startOffsetRef = useRef(0);
-  const maxOffsetRef = useRef(0);
-  useEffect(() => {
-    const onResize = () =>
-      (maxOffsetRef.current = Math.round(window.innerHeight * 0.6));
-    onResize();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-  const onPointerMove = (e) => {
-    const y = e.clientY ?? (e.touches?.[0]?.clientY || 0);
-    let next = startOffsetRef.current + (y - startYRef.current);
-    next = Math.max(0, Math.min(next, maxOffsetRef.current));
-    setOffset(next);
-  };
-  const endDrag = () => {
-    const max = maxOffsetRef.current;
-    setDragging(false);
-    setOffset((prev) => (prev > max * 0.55 ? max : 0));
-    window.removeEventListener("pointermove", onPointerMove);
-    window.removeEventListener("pointerup", endDrag);
-  };
-  const startDrag = (e) => {
-    e.preventDefault();
-    setDragging(true);
-    startYRef.current = e.clientY ?? (e.touches?.[0]?.clientY || 0);
-    startOffsetRef.current = offset;
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("pointerup", endDrag, { passive: true });
-  };
-
-  // ===== Kaynak veri: tekli mi çoklu mu? =====
+  /* Seçim listesi (tekli/çoklu) */
   const selectedList = useMemo(() => {
-    if (groupMode) {
-      return parcels.filter((p) => groupedParcels.includes(p.id));
-    }
+    if (groupMode) return parcels.filter((p) => groupedParcels.includes(p.id));
     return parcel ? [parcel] : [];
   }, [groupMode, groupedParcels, parcels, parcel]);
 
-  // Birleştirilmiş alan, ağaç/fidan ve tür dağılımı
-  const combined = useMemo(() => {
+  /* Üst sabit satır: Tanım • Parsel Bilgisi • Dönüm */
+  const base = useMemo(() => {
     let alanM2 = 0;
-    let agacToplam = 0;
-    let fidanToplam = 0;
-    const agacMap = new Map(); // tür -> adet
-    const fidanMap = new Map();
-
     selectedList.forEach((p) => {
       const props = p.properties ?? p ?? {};
-      const info = p.info ?? {};
       alanM2 += toFloatFlexible(props.alan ?? p.alan);
-
-      const ag = info.agac || {};
-      const fd = info.fidan || {};
-      for (const [k, v] of Object.entries(ag)) {
-        const n = toFloatFlexible(v);
-        if (n > 0) {
-          agacToplam += n;
-          agacMap.set(k, (agacMap.get(k) || 0) + n);
-        }
-      }
-      for (const [k, v] of Object.entries(fd)) {
-        const n = toFloatFlexible(v);
-        if (n > 0) {
-          fidanToplam += n;
-          fidanMap.set(k, (fidanMap.get(k) || 0) + n);
-        }
-      }
     });
+    const donum = alanM2 > 0 ? alanM2 / 1000 : 0;
 
-    const agacList = Array.from(agacMap.entries()).sort((a, b) => b[1] - a[1]);
-    const fidanList = Array.from(fidanMap.entries()).sort(
-      (a, b) => b[1] - a[1]
-    );
+    const firstProps = selectedList[0]?.properties ?? selectedList[0] ?? {};
+    const infoFirst = selectedList[0]?.info ?? {};
+    const mahalle = firstProps.mahalleAd ?? firstProps.mahalle ?? "-";
+    const ada = firstProps.adaNo ?? firstProps.ada ?? "-";
+    const parselNo = firstProps.parselNo ?? firstProps.parsel ?? "-";
+    const tanim = infoFirst.tanim || firstProps.tanim || "-";
 
-    return { alanM2, agacToplam, fidanToplam, agacList, fidanList };
+    return { alanM2, donum, mahalle, ada, parselNo, tanim };
   }, [selectedList]);
 
-  // Tekli görünüm için ilk öğenin meta bilgileri
-  const firstProps = selectedList[0]?.properties ?? selectedList[0] ?? {};
-  const infoFirst = selectedList[0]?.info ?? {};
-  const mahalle = firstProps.mahalleAd ?? firstProps.mahalle ?? "-";
-  const ada = firstProps.adaNo ?? firstProps.ada ?? "-";
-  const parselNo = firstProps.parselNo ?? firstProps.parsel ?? "-";
-  const tanim = infoFirst.tanim || firstProps.tanim || "-";
+  /* Alt tek satır: mapMode’a göre değer üret */
+  const modeSummary = useMemo(() => {
+    switch (mapMode) {
+      case "ilac":
+        return summarizeIlac(selectedList);
+      case "hasat":
+        return summarizeHasat(selectedList);
+      case "sayim":
+        return summarizeSayim(selectedList);
+      case "gubre":
+        return summarizeGubre(selectedList);
+      default:
+        return summarizeIlac(selectedList);
+    }
+  }, [mapMode, selectedList]);
 
-  // Metrikler (tekli ve grup için farklı hesaplama)
-  const AVG_TREE_AREA_M2 = 36; // ihtiyaca göre değiştir
-  let donumVal = 0;
-  let totalTrees = 0;
-  let plantableCount = 0;
-  let treesPerDonum = 0;
-  let occupancyPct = 0;
-
-  if (groupMode && selectedList.length > 1) {
-    // Grup seçimi: her metrik ayrı ayrı hesaplanıp ortalanacak/toplanacak
-    let donumSum = 0;
-    let treesPerDonumSum = 0;
-    let occupancySum = 0;
-    let plantableSum = 0;
-    let validCount = 0;
-    selectedList.forEach((p) => {
-      const props = p.properties ?? p ?? {};
-      const info = p.info ?? {};
-      const alanM2 = toFloatFlexible(props.alan ?? p.alan);
-      const donum = alanM2 > 0 ? alanM2 / 1000 : 0;
-      const agacTop = Object.values(info.agac || {}).reduce((s, v) => s + toFloatFlexible(v), 0);
-      const fidanTop = Object.values(info.fidan || {}).reduce((s, v) => s + toFloatFlexible(v), 0);
-      const total = agacTop + fidanTop;
-      const used = total * AVG_TREE_AREA_M2;
-      const free = Math.max(0, alanM2 - used);
-      const plantable = Math.floor(free / AVG_TREE_AREA_M2);
-      const tpd = donum > 0 ? total / donum : 0;
-      const occ = alanM2 > 0 ? Math.min(100, (used / alanM2) * 100) : 0;
-      donumSum += donum;
-      treesPerDonumSum += tpd;
-      occupancySum += occ;
-      plantableSum += plantable;
-      validCount++;
-    });
-    donumVal = donumSum;
-    treesPerDonum = validCount > 0 ? treesPerDonumSum / validCount : 0;
-    occupancyPct = validCount > 0 ? occupancySum / validCount : 0;
-    plantableCount = plantableSum; // SUM for group
-    totalTrees = combined.agacToplam + combined.fidanToplam;
-  } else {
-    // Tekli veya tekli grup
-    donumVal = combined.alanM2 > 0 ? combined.alanM2 / 1000 : 0;
-    totalTrees = combined.agacToplam + combined.fidanToplam;
-    const usedArea = totalTrees * AVG_TREE_AREA_M2;
-    const freeArea = Math.max(0, combined.alanM2 - usedArea);
-    plantableCount = Math.floor(freeArea / AVG_TREE_AREA_M2);
-    treesPerDonum = donumVal > 0 ? totalTrees / donumVal : 0;
-    occupancyPct = combined.alanM2 > 0 ? Math.min(100, (usedArea / combined.alanM2) * 100) : 0;
-  }
+  const def = MODE_DEFS[mapMode] || MODE_DEFS.ilac;
 
   return (
     <div
       style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 9990 }}
     >
-      <div
-        className={`sai-draggable ${dragging ? "dragging" : ""}`}
-        style={{ transform: `translateY(${offset}px)` }}
-      >
-        <div style={{ maxWidth: 1100, margin: "8px auto" }}>
-          <div className="sai-panel sai-scroll">
-            {/* Başlık */}
-            <div className="sai-head sai-head-3">
-              <div className="sai-head-left">
-                {groupMode ? `(Seçili: ${selectedList.length} Alan)` : ""}
-              </div>
+      <div style={{ maxWidth: 1100, margin: "8px auto" }}>
+        <div className="sai-panel">
+          {selectedList.length ? (
+            <>
+              {/* 1) Sabit satır */}
+              <div className="sai-row-3">
+                <Section title="Tanım">
+                  <div className="sai-desc">{base.tanim}</div>
+                </Section>
 
-              <div
-                className="sai-head-center"
-                onPointerDown={startDrag}
-                style={{ touchAction: "none" }}
-              >
-                <img src={logo} alt="Logo" className="sai-head-logo" />
-              </div>
-
-              <div className="sai-head-right">
-                <button
-                  type="button"
-                  className="sai-btn"
-                  onClick={() => setOpenList(true)}
-                >
-                  Parsel Listeleri
-                </button>
-              </div>
-            </div>
-
-            {selectedList.length ? (
-              <>
-                {/* Üst satır: Tanım • Parsel • Dönüm */}
-                <div className="sai-row-3">
-                  <Section title="Tanım">
-                    <div className="sai-desc">
-                      {groupMode ? tanim : infoFirst.tanim || "-"}
+                <Section title="Parsel Bilgisi">
+                  <div className="sai-kv">
+                    <div>
+                      <span className="key">Mahalle</span>
+                      <span className="val">{base.mahalle}</span>
                     </div>
-                  </Section>
-
-                  <Section title="">
-                    <div className="sai-kv">
-                      <div>
-                        <span className="key">Mahalle</span>
-                        <span className="val">{mahalle}</span>
-                      </div>
-                      <div>
-                        <span className="key">Ada / Parsel</span>
-                        <span className="val">
-                          {groupMode
-                            ? `${selectedList.length} parsel`
-                            : `${ada} / ${parselNo}`}
-                        </span>
-                      </div>
-                    </div>
-                  </Section>
-
-                  <Section title="">
-                    <div className="sai-metric">
-                      {donumVal ? `${nfArea.format(donumVal)} dönüm` : "-"}
-                    </div>
-                    <div className="sai-sub">
-                      ≈ {nfArea.format(combined.alanM2)} m²
-                    </div>
-                  </Section>
-                </div>
-
-                {/* 3 metrik: Dönüme düşen • Dikilebilir • Doluluk */}
-                <div className="sai-row-3">
-                  <Section title="Dönüme Düşen Ağaç">
-                    <div className="sai-metric">
-                      {donumVal ? nfArea.format(treesPerDonum) : "-"}
-                    </div>
-                  </Section>
-                  <Section title="Kaç Fidan Dikilebilir?">
-                    <div className="sai-metric">
-                      {nfInt.format(plantableCount)}
-                    </div>
-                  </Section>
-                  <Section title="Doluluk">
-                    <div className="sai-metric">
-                      {nfArea.format(occupancyPct)}%
-                    </div>
-                  </Section>
-                </div>
-                {/* Ağaç • Fidan (birleşik listeler) */}
-                <div className="sai-row">
-                  <Section
-                    title={`🌳Ağaç • Toplam ${nfInt.format(combined.agacToplam)}`}
-                  >
-                    {combined.agacList.length ? (
-                      <ul className="sai-list">
-                        {combined.agacList.map(([name, n]) => (
-                          <li key={`ag-${name}`} className="sai-list-item">
-                            <span className="sai-list-name">
-                              {(name || "-").toString().toUpperCase("tr-TR")}
-                            </span>
-                            <span className="sai-count-badge">
-                              {nfInt.format(n)}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="sai-sub">Kayıtlı ağaç yok.</div>
-                    )}
-                  </Section>
-
-                  <Section
-                    title={`🌱Fidan • Toplam ${nfInt.format(
-                      combined.fidanToplam
-                    )}`}
-                  >
-                    {combined.fidanList.length ? (
-                      <ul className="sai-list">
-                        {combined.fidanList.map(([name, n]) => (
-                          <li key={`fd-${name}`} className="sai-list-item">
-                            <span className="sai-list-name">
-                              {(name || "-").toString().toUpperCase("tr-TR")}
-                            </span>
-                            <span className="sai-count-badge">
-                              {nfInt.format(n)}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="sai-sub">Kayıtlı fidan yok.</div>
-                    )}
-                  </Section>
-                </div>
-
-              </>
-            ) : (
-              <div className="sai-empty">
-                Henüz seçim yok. Haritadan parsel seçin.
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ===== Parsel Listeleri Modal (değişmeden kalabilir) ===== */}
-      <div className={`plist-root ${openList ? "open" : ""}`}>
-        <div className="plist-backdrop" onClick={() => setOpenList(false)} />
-        <div
-          className="plist-panel"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Parsel Listeleri"
-        >
-          <div className="plist-header">
-            <div className="plist-title">Parsel Listeleri</div>
-            <button className="plist-close" onClick={() => setOpenList(false)}>
-              Kapat
-            </button>
-          </div>
-
-          {/* Basit arama çubuğu */}
-          <div style={{ padding: '0 16px 10px 16px' }}>
-            <input
-              type="text"
-              placeholder="Parsel ara..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="plist-search"
-              style={{ width: '100%', padding: '7px 12px', borderRadius: 6, border: '1px solid #bbb', fontSize: 15, marginBottom: 6 }}
-            />
-          </div>
-          <div className="plist-list">
-            {filteredParcels.map((p) => {
-              const pr = p.properties || {};
-              const tanim = (p.info && p.info.tanim) || pr.tanim || "-";
-              const adaNo = pr.adaNo ?? p.ada ?? "-";
-              const parNo = pr.parselNo ?? p.parsel ?? "-";
-              const alan = pr.alan ?? p.alan ?? "-";
-
-              // Doluluk progress renk geçişli (0% kırmızı -> 100% yeşil)
-              const aM2 = toFloatFlexible(alan);
-              const agacTop = Object.values(p.info?.agac || {}).reduce(
-                (s, v) => s + toFloatFlexible(v),
-                0
-              );
-              const fidanTop = Object.values(p.info?.fidan || {}).reduce(
-                (s, v) => s + toFloatFlexible(v),
-                0
-              );
-              const used = (agacTop + fidanTop) * 36;
-              const pct = aM2 > 0 ? Math.min(100, (used / aM2) * 100) : 0;
-              const red = [239, 68, 68],
-                green = [34, 197, 94];
-              const t = pct / 100,
-                mix = red.map((r, i) => Math.round(r + (green[i] - r) * t));
-              const barColor = `rgb(${mix.join(",")})`;
-
-              return (
-                <div
-                  key={p.id}
-                  className="plist-item"
-                  onClick={() => {
-                    setSelectedParcel(p.id);
-                    setOpenList(false);
-                  }}
-                  title="Parseli seç"
-                >
-                  <div className="plist-row-1">{tanim}</div>
-                  <div className="plist-row-2">
-                    <span className="pill-inline">
-                      Ada/Parsel: {adaNo} / {parNo}
-                    </span>
-                    <span className="pill-inline">
-                      Alan: {nfInt.format(toFloatFlexible(alan))} m²
-                    </span>
-                    <span
-                      className="pill-progress"
-                      role="img"
-                      aria-label={`Doluluk ${Math.round(pct)}%`}
-                    >
-                      <span
-                        className="pill-progress-fill"
-                        style={{ width: `${pct}%`, background: barColor }}
-                      />
-                      <span className="pill-progress-label">
-                        {Math.round(pct)}%
+                    <div>
+                      <span className="key">Ada / Parsel</span>
+                      <span className="val">
+                        {groupMode
+                          ? `${selectedList.length} parsel`
+                          : `${base.ada} / ${base.parselNo}`}
                       </span>
-                    </span>
+                    </div>
                   </div>
+                </Section>
+
+                <Section title="Dönüm Bilgisi">
+                  <div className="sai-metric">
+                    {base.donum ? `${nfArea.format(base.donum)} dönüm` : "-"}
+                  </div>
+                  <div className="sai-sub">
+                    ≈ {nfInt.format(base.alanM2)} m²
+                  </div>
+                </Section>
+              </div>
+
+              {/* 2) Mod satırı — TEK SATIR, soldan sağa sütunlar */}
+              <Section title={def.title} className="sai-card mode-one-line">
+                <div
+                  className="mode-grid"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${def.columns.length}, minmax(0, 1fr))`,
+                    gap: 8,
+                    alignItems: "start",
+                  }}
+                >
+                  {def.columns.map((col) => (
+                    <div key={col} className="mode-cell">
+                      <div className="mode-cell-key">{col}</div>
+                      <div className="mode-cell-val">
+                        {modeSummary[col] != null && modeSummary[col] !== ""
+                          ? String(modeSummary[col])
+                          : "-"}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              );
-            })}
-          </div>
+              </Section>
+            </>
+          ) : (
+            <div className="sai-empty">
+              Henüz seçim yok. Haritadan parsel seçin.
+            </div>
+          )}
         </div>
       </div>
-      {/* ===== /Modal ===== */}
     </div>
   );
 }

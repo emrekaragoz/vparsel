@@ -5,7 +5,11 @@ export const ParcelContext = createContext();
 export function ParcelProvider({ children }) {
   const [selectedParcel, setSelectedParcel] = useState(null);
 
-  // Gruplama
+  // 🔹 Harita modu (UI: İlaçlama / Hasat / Sayım / Sağlık)
+  // Varsayılanı "ilac" bıraktım; MapContainer’daki MODES ile uyumlu.
+  const [mapMode, setMapMode] = useState("ilac");
+
+  // 🔹 Gruplama
   const [groupMode, setGroupMode] = useState(false);
   const [groupedParcels, setGroupedParcels] = useState([]);
 
@@ -29,8 +33,15 @@ export function ParcelProvider({ children }) {
   return (
     <ParcelContext.Provider
       value={{
+        // seçimler
         selectedParcel,
         setSelectedParcel,
+
+        // harita modu
+        mapMode,
+        setMapMode,
+
+        // gruplama
         groupMode,
         setGroupMode: handleGroupMode,
         groupedParcels,
