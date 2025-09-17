@@ -7,7 +7,7 @@ export function ParcelProvider({ children }) {
 
   // 🔹 Harita modu (UI: İlaçlama / Hasat / Sayım / Sağlık)
   // Varsayılanı "ilac" bıraktım; MapContainer’daki MODES ile uyumlu.
-  const [mapMode, setMapMode] = useState("ilac");
+  const [mapMode, setMapMode] = useState("sayim");
 
   // 🔹 Gruplama
   const [groupMode, setGroupMode] = useState(false);
