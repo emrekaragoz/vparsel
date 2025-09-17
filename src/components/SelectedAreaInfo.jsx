@@ -1,8 +1,8 @@
-import React, { useMemo, useContext } from "react";
+import React, { useMemo, useState, useContext } from "react";
 import useParcels from "../hooks/useParcels.js";
 import { ParcelContext } from "../contexts/ParcelContext.jsx";
 
-/* ---------- Yardımcılar ---------- */
+/* ---------- Helpers ---------- */
 const toFloatFlexible = (v) => {
   if (typeof v === "number") return v;
   if (v == null) return 0;
@@ -20,25 +20,7 @@ const toFloatFlexible = (v) => {
 const nfInt = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const nfArea = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2 });
 
-const joinText = (arr) =>
-  Array.from(
-    new Set(
-      (arr || [])
-        .map((s) => (s == null ? "" : String(s).trim()))
-        .filter(Boolean)
-    )
-  ).join(" / ");
-
-const rangeText = (arr) => {
-  const dates = (arr || []).filter(Boolean);
-  if (!dates.length) return "-";
-  const sorted = [...dates].sort((a, b) => new Date(a) - new Date(b));
-  return sorted.length === 1
-    ? sorted[0]
-    : `${sorted[0]} – ${sorted[sorted.length - 1]}`;
-};
-
-/* ---------- Mod tanımları (kolon etiketleri) ---------- */
+/* ---------- Mode definitions (column labels) ---------- */
 const MODE_DEFS = {
   ilac: {
     title: "İlaçlama Bilgisi",
@@ -47,7 +29,7 @@ const MODE_DEFS = {
       "Miktar",
       "Gözlem / Not",
       "Tarih",
-      "Durum(Yapıldı,Beklemede,Zamanı Geçti)",
+      "Durum",
     ],
   },
   hasat: {
@@ -65,7 +47,7 @@ const MODE_DEFS = {
   },
   sayim: {
     title: "Sayım Bilgisi",
-    columns: ["Tür", "Ağaç", "Fidan", "Toplam", "Tarih"],
+    columns: null, // will be set dynamically
   },
   gubre: {
     title: "Gübreleme",
@@ -74,173 +56,170 @@ const MODE_DEFS = {
       "Miktar",
       "Gözlem/Not",
       "Tarih",
-      "Durum(Yapıldı,Beklemede,Zamanı Geçti)",
+      "Durum",
     ],
   },
 };
 
-/* ---------- Özet hesaplayıcılar (çok kayıt → tek satır) ---------- */
+/* ---------- Summary calculators (many records → one row) ---------- */
 function summarizeIlac(list) {
-  const marka = [];
-  const notlar = [];
-  const tarihler = [];
-  const durumlar = [];
-  let miktarTop = 0;
-
+  const rows = [];
   list.forEach((p) => {
     const src = p.info?.ilaclama || p.properties?.ilaclama || [];
     (Array.isArray(src) ? src : []).forEach((e) => {
-      marka.push(e.marka ?? e.ilac);
-      notlar.push(e.not ?? e.gozlem);
-      tarihler.push(e.tarih);
-      durumlar.push(e.durum);
-      miktarTop += toFloatFlexible(e.miktar);
+      rows.push({
+        "İlaç Marka": e.marka ?? e.ilac ?? "-",
+        Miktar: e.miktar ? nfArea.format(toFloatFlexible(e.miktar)) : "-",
+        "Gözlem / Not": e.not ?? e.gozlem ?? "-",
+        Tarih: e.tarih ?? "-",
+        "Durum": e.durum ?? "-",
+      });
     });
   });
-
-  return {
-    "İlaç Marka": joinText(marka) || "-",
-    Miktar: miktarTop ? nfArea.format(miktarTop) : "-",
-    "Gözlem / Not": joinText(notlar) || "-",
-    Tarih: rangeText(tarihler),
-    "Durum(Yapıldı,Beklemede,Zamanı Geçti)": joinText(durumlar) || "-",
-  };
+  return { list: rows.length ? rows : [{
+    "İlaç Marka": "-", Miktar: "-", "Gözlem / Not": "-", Tarih: "-", "Durum": "-",
+  }] };
 }
 
 function summarizeHasat(list) {
-  const turler = [];
-  const notlar = [];
-  const tarihler = [];
-  let hasatKg = 0;
-  let isci = 0;
-  let saat = 0;
-  let cikanYag = 0;
-
+  const rows = [];
   list.forEach((p) => {
     const src = p.info?.hasat || p.properties?.hasat || [];
     (Array.isArray(src) ? src : []).forEach((e) => {
-      turler.push(e.urun ?? e.tur);
-      notlar.push(e.not ?? e.gozlem);
-      tarihler.push(e.tarih);
-      hasatKg += toFloatFlexible(e.miktar ?? e.hasatKg);
-      isci += toFloatFlexible(e.isci ?? e.isciSayisi);
-      saat += toFloatFlexible(e.saat ?? e.calisilanSaat);
-      cikanYag += toFloatFlexible(e.yag ?? e.cikanYag);
+      const hasatKg = toFloatFlexible(e.miktar ?? e.hasatKg);
+      const cikanYag = toFloatFlexible(e.yag ?? e.cikanYag);
+      const verim = hasatKg > 0 ? `${nfArea.format((cikanYag / hasatKg) * 100)}%` : "-";
+      rows.push({
+        Tür: e.urun ?? e.tur ?? "-",
+        HasatKg: hasatKg ? nfInt.format(hasatKg) : "-",
+        "Gözlem/Not": e.not ?? e.gozlem ?? "-",
+        Tarih: e.tarih ?? "-",
+        İşçiSayısı: e.isci ?? e.isciSayisi ? nfInt.format(toFloatFlexible(e.isci ?? e.isciSayisi)) : "-",
+        ÇalışılanSaat: e.saat ?? e.calisilanSaat ? nfArea.format(toFloatFlexible(e.saat ?? e.calisilanSaat)) : "-",
+        ÇıkanYağ: cikanYag ? nfInt.format(cikanYag) : "-",
+        Verim: verim,
+      });
     });
   });
-
-  const verim =
-    hasatKg > 0 ? `${nfArea.format((cikanYag / hasatKg) * 100)}%` : "-";
-
-  return {
-    Tür: joinText(turler) || "-",
-    HasatKg: hasatKg ? nfInt.format(hasatKg) : "-",
-    "Gözlem/Not": joinText(notlar) || "-",
-    Tarih: rangeText(tarihler),
-    İşçiSayısı: isci ? nfInt.format(isci) : "-",
-    ÇalışılanSaat: saat ? nfArea.format(saat) : "-",
-    ÇıkanYağ: cikanYag ? nfInt.format(cikanYag) : "-",
-    Verim: verim,
-  };
+  return { list: rows.length ? rows : [{
+    Tür: "-", HasatKg: "-", "Gözlem/Not": "-", Tarih: "-", İşçiSayısı: "-", ÇalışılanSaat: "-", ÇıkanYağ: "-", Verim: "-",
+  }] };
 }
 
 function summarizeSayim(list) {
-  // Tür bazlı topla (agac + fidan). Tek satıra sığdırmak için toplamları birleştir.
-  const map = new Map(); // tur -> { agac, fidan }
-  const tarihler = [];
+  const typeSet = new Set();
+  const agacCounts = {};
+  const fidanCounts = {};
+  let tarih = "04.09.2025";
+  let durum = "Yapıldı";
 
   list.forEach((p) => {
     const ag = p.info?.agac || {};
     const fd = p.info?.fidan || {};
-    const t = p.info?.sayimTarih || p.properties?.sayimTarih;
-    if (t) tarihler.push(t);
+    const t = p.info?.tarih || p.properties?.sayimTarih;
+    const d = p.info?.Durum || p.properties?.Durum; // <-- Yeni eklenen satır
+
+    if (t) tarih = t;
+    if (d) durum = d; // <-- Yeni eklenen satır
 
     for (const [k, v] of Object.entries(ag)) {
-      const n = toFloatFlexible(v);
-      const o = map.get(k) || { agac: 0, fidan: 0 };
-      o.agac += n;
-      map.set(k, o);
+      if (toFloatFlexible(v) > 0) typeSet.add(k);
+      agacCounts[k] = (agacCounts[k] || 0) + toFloatFlexible(v);
     }
     for (const [k, v] of Object.entries(fd)) {
-      const n = toFloatFlexible(v);
-      const o = map.get(k) || { agac: 0, fidan: 0 };
-      o.fidan += n;
-      map.set(k, o);
+      if (toFloatFlexible(v) > 0) typeSet.add(k);
+      fidanCounts[k] = (fidanCounts[k] || 0) + toFloatFlexible(v);
     }
   });
 
-  // En baskın türü özet satırına yaz (tek satır gereği)
-  const listAgg = Array.from(map.entries()).map(([tur, o]) => ({
-    tur,
-    agac: o.agac,
-    fidan: o.fidan,
-    toplam: o.agac + o.fidan,
-  }));
-  listAgg.sort((a, b) => b.toplam - a.toplam);
+  const types = Array.from(typeSet);
+  const agacRow = { label: "Ağaç" };
+  const fidanRow = { label: "Fidan" };
+  
+  agacRow.Toplam = types.reduce((sum, type) => sum + (agacCounts[type] > 0 ? agacCounts[type] : 0), 0);
+  fidanRow.Toplam = types.reduce((sum, type) => sum + (fidanCounts[type] > 0 ? fidanCounts[type] : 0), 0);
+  
+  agacRow.Toplam = agacRow.Toplam ? nfInt.format(agacRow.Toplam) : "-";
+  fidanRow.Toplam = fidanRow.Toplam ? nfInt.format(fidanRow.Toplam) : "-";
 
-  const best = listAgg[0];
-  const turText = best
-    ? `${best.tur.toUpperCase("tr-TR")} (Toplam ${nfInt.format(best.toplam)})`
-    : "-";
+  types.forEach((type) => {
+    agacRow[type.toUpperCase("tr-TR")] = agacCounts[type] > 0 ? nfInt.format(agacCounts[type]) : "-";
+    fidanRow[type.toUpperCase("tr-TR")] = fidanCounts[type] > 0 ? nfInt.format(fidanCounts[type]) : "-";
+  });
+  
+  agacRow.Tarih = tarih;
+  fidanRow.Tarih = tarih;
+  agacRow.Durum = durum; // <-- Yeni eklenen satır
+  fidanRow.Durum = durum; // <-- Yeni eklenen satır
 
   return {
-    Tür: turText,
-    Ağaç: best ? nfInt.format(best.agac) : "-",
-    Fidan: best ? nfInt.format(best.fidan) : "-",
-    Toplam: best ? nfInt.format(best.toplam) : "-",
-    Tarih: rangeText(tarihler),
+    columns: ["", ...types.map(t => t.toUpperCase("tr-TR")), "Toplam", "Tarih", "Durum"], // <-- Yeni eklenen sütun
+    list: types.length ? [agacRow, fidanRow] : [{ label: "Ağaç" }, { label: "Fidan" }],
   };
 }
 
 function summarizeGubre(list) {
-  const cins = [];
-  const notlar = [];
-  const tarihler = [];
-  const durumlar = [];
-  let miktarTop = 0;
-
+  const rows = [];
   list.forEach((p) => {
     const src = p.info?.gubre || p.properties?.gubre || [];
     (Array.isArray(src) ? src : []).forEach((e) => {
-      cins.push(e.cins ?? e.cinsi ?? e.gubreCinsi);
-      notlar.push(e.not ?? e.gozlem);
-      tarihler.push(e.tarih);
-      durumlar.push(e.durum);
-      miktarTop += toFloatFlexible(e.miktar);
+      rows.push({
+        "Gübre Cinsi": e.cins ?? e.cinsi ?? e.gubreCinsi ?? "-",
+        Miktar: e.miktar ? nfArea.format(toFloatFlexible(e.miktar)) : "-",
+        "Gözlem/Not": e.not ?? e.gozlem ?? "-",
+        Tarih: e.tarih ?? "-",
+        "Durum(Yapıldı,Beklemede,Zamanı Geçti)": e.durum ?? "-",
+      });
     });
   });
-
-  return {
-    "Gübre Cinsi": joinText(cins) || "-",
-    Miktar: miktarTop ? nfArea.format(miktarTop) : "-",
-    "Gözlem/Not": joinText(notlar) || "-",
-    Tarih: rangeText(tarihler),
-    "Durum(Yapıldı,Beklemede,Zamanı Geçti)": joinText(durumlar) || "-",
-  };
+  return { list: rows.length ? rows : [{
+    "Gübre Cinsi": "-", Miktar: "-", "Gözlem/Not": "-", Tarih: "-", "Durum": "-",
+  }] };
 }
 
-/* ---------- Basit kart bileşeni ---------- */
+/* ---------- Simple card component ---------- */
 function Section({ title, children, className = "" }) {
   return (
     <section className={`sai-card ${className}`}>
-      <div className="sai-card-title">{title}</div>
+      {title && <div className="sai-card-title">{title}</div>}
       <div className="sai-card-body">{children}</div>
     </section>
   );
 }
 
-/* ======================= ANA BİLEŞEN ======================= */
+/* ======================= MAIN COMPONENT ======================= */
 export default function SelectedAreaInfo({ parcel }) {
   const { parcels } = useParcels();
-  const { groupMode, groupedParcels, mapMode } = useContext(ParcelContext);
+  const { groupMode, groupedParcels, mapMode, setSelectedParcel } = useContext(ParcelContext);
 
-  /* Seçim listesi (tekli/çoklu) */
+  // ===== START: Parcel List (plist) Modal Logic =====
+  const [openList, setOpenList] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredParcels = useMemo(() => {
+    if (!searchTerm.trim()) return parcels;
+    const q = searchTerm.trim().toLowerCase();
+    return parcels.filter((p) => {
+      const pr = p.properties || {};
+      const tanim = (p.info && p.info.tanim) || pr.tanim || "";
+      const adaNo = pr.adaNo ?? p.ada ?? "";
+      const parNo = pr.parselNo ?? p.parsel ?? "";
+      return (
+        tanim.toLowerCase().includes(q) ||
+        String(adaNo).toLowerCase().includes(q) ||
+        String(parNo).toLowerCase().includes(q)
+      );
+    });
+  }, [searchTerm, parcels]);
+  // ===== END: Parcel List (plist) Modal Logic =====
+
+  /* Selection list (single/multi) */
   const selectedList = useMemo(() => {
     if (groupMode) return parcels.filter((p) => groupedParcels.includes(p.id));
     return parcel ? [parcel] : [];
   }, [groupMode, groupedParcels, parcels, parcel]);
 
-  /* Üst sabit satır: Tanım • Parsel Bilgisi • Dönüm */
+  /* Top static row: Description • Parcel Info • Area */
   const base = useMemo(() => {
     let alanM2 = 0;
     selectedList.forEach((p) => {
@@ -254,44 +233,45 @@ export default function SelectedAreaInfo({ parcel }) {
     const mahalle = firstProps.mahalleAd ?? firstProps.mahalle ?? "-";
     const ada = firstProps.adaNo ?? firstProps.ada ?? "-";
     const parselNo = firstProps.parselNo ?? firstProps.parsel ?? "-";
+    const tarih = infoFirst.tarih  || "-";
+    const durum = infoFirst.durum  || "-";
     const tanim = infoFirst.tanim || firstProps.tanim || "-";
 
-    return { alanM2, donum, mahalle, ada, parselNo, tanim };
+    return { alanM2, donum, mahalle, ada, parselNo, tanim, tarih, durum };
   }, [selectedList]);
 
-  /* Alt tek satır: mapMode’a göre değer üret */
+  /* Bottom single row: generate value based on mapMode */
   const modeSummary = useMemo(() => {
+    if (mapMode === "sayim") {
+      return summarizeSayim(selectedList);
+    }
     switch (mapMode) {
-      case "ilac":
-        return summarizeIlac(selectedList);
-      case "hasat":
-        return summarizeHasat(selectedList);
-      case "sayim":
-        return summarizeSayim(selectedList);
-      case "gubre":
-        return summarizeGubre(selectedList);
-      default:
-        return summarizeIlac(selectedList);
+      case "ilac": return summarizeIlac(selectedList);
+      case "hasat": return summarizeHasat(selectedList);
+      case "gubre": return summarizeGubre(selectedList);
+      default: return summarizeIlac(selectedList);
     }
   }, [mapMode, selectedList]);
 
-  const def = MODE_DEFS[mapMode] || MODE_DEFS.ilac;
+  let def = MODE_DEFS[mapMode] || MODE_DEFS.ilac;
+  if (mapMode === "sayim" && modeSummary.columns) {
+    def = { ...def, columns: modeSummary.columns };
+  }
 
   return (
-    <div
-      style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 9990 }}
-    >
-      <div style={{ maxWidth: 1100, margin: "8px auto" }}>
-        <div className="sai-panel">
+    <div style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 9990 }}>
+      <div style={{ maxWidth: 1100, margin: "2px auto" }}>
+        <div className="sai-panel" style={{ padding: '8px 8px' }}>
+
           {selectedList.length ? (
             <>
-              {/* 1) Sabit satır */}
+              {/* 1) Static row */}
               <div className="sai-row-3">
                 <Section title="Tanım">
                   <div className="sai-desc">{base.tanim}</div>
                 </Section>
 
-                <Section title="Parsel Bilgisi">
+                <Section>
                   <div className="sai-kv">
                     <div>
                       <span className="key">Mahalle</span>
@@ -300,15 +280,13 @@ export default function SelectedAreaInfo({ parcel }) {
                     <div>
                       <span className="key">Ada / Parsel</span>
                       <span className="val">
-                        {groupMode
-                          ? `${selectedList.length} parsel`
-                          : `${base.ada} / ${base.parselNo}`}
+                        {groupMode ? `${selectedList.length} parsel` : `${base.ada} / ${base.parselNo}`}
                       </span>
                     </div>
                   </div>
                 </Section>
 
-                <Section title="Dönüm Bilgisi">
+                <Section>
                   <div className="sai-metric">
                     {base.donum ? `${nfArea.format(base.donum)} dönüm` : "-"}
                   </div>
@@ -318,37 +296,119 @@ export default function SelectedAreaInfo({ parcel }) {
                 </Section>
               </div>
 
-              {/* 2) Mod satırı — TEK SATIR, soldan sağa sütunlar */}
-              <Section title={def.title} className="sai-card mode-one-line">
-                <div
-                  className="mode-grid"
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: `repeat(${def.columns.length}, minmax(0, 1fr))`,
-                    gap: 8,
-                    alignItems: "start",
-                  }}
-                >
-                  {def.columns.map((col) => (
-                    <div key={col} className="mode-cell">
-                      <div className="mode-cell-key">{col}</div>
-                      <div className="mode-cell-val">
-                        {modeSummary[col] != null && modeSummary[col] !== ""
-                          ? String(modeSummary[col])
-                          : "-"}
-                      </div>
-                    </div>
-                  ))}
+              {/* 2) Bottom info: as a table */}
+              <Section className="sai-card mode-table">
+                <div className="mode-table-wrap" style={{ overflowX: 'auto', marginTop: 2, marginBottom: 2 }}>
+                  <table className="mode-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                    <thead>
+                      <tr>
+                        {def.columns.map((col, idx) => (
+                          <th key={col + idx} style={{ fontWeight: 700, padding: '3px 6px', borderBottom: '1px solid #e5e7eb', background: '#f3f4f6', color: '#222', textAlign: 'left', fontSize: 12 }}>
+                            {col || (idx === 0 ? "" : col)}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.isArray(modeSummary.list) && modeSummary.list.length > 0 ? (
+                        modeSummary.list.map((row, i) => (
+                          <tr key={i}>
+                            {def.columns.map((col, idx) => (
+                              <td key={col + idx} style={{ padding: '3px 6px', borderBottom: '1px solid #f3f4f6', background: '#fff', color: '#111827', fontSize: 12, fontWeight: idx === 0 ? 700 : 400 }}>
+                                {idx === 0 ? row.label : (row[col] != null && row[col] !== "" ? String(row[col]) : "-")}
+                              </td>
+                            ))}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          {def.columns.map((col, idx) => (
+                            <td key={col + idx} style={{ padding: '3px 6px', borderBottom: '1px solid #f3f4f6', background: '#fff', color: '#111827', fontSize: 12 }}>-</td>
+                          ))}
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </Section>
             </>
           ) : (
             <div className="sai-empty">
-              Henüz seçim yok. Haritadan parsel seçin.
+              Henüz seçim yok. Haritadan parsel seçin veya listeden açın.
             </div>
           )}
         </div>
       </div>
+
+      {/* ===== Parcel List Modal ===== */}
+      <div className={`plist-root ${openList ? "open" : ""}`}>
+        <div className="plist-backdrop" onClick={() => setOpenList(false)} />
+        <div
+          className="plist-panel"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Parsel Listeleri"
+        >
+          <div className="plist-header">
+            <div className="plist-title">Parsel Listeleri</div>
+            <button className="plist-close" onClick={() => setOpenList(false)}>
+              Kapat
+            </button>
+          </div>
+
+          <div style={{ padding: '0 16px 10px 16px' }}>
+            <input
+              type="text"
+              placeholder="Parsel ara..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="plist-search"
+              style={{ width: '100%', padding: '7px 12px', borderRadius: 6, border: '1px solid #bbb', fontSize: 15, marginBottom: 6 }}
+            />
+          </div>
+          <div className="plist-list">
+            {filteredParcels.map((p) => {
+              const pr = p.properties || {};
+              const tanim = (p.info && p.info.tanim) || pr.tanim || "-";
+              const adaNo = pr.adaNo ?? p.ada ?? "-";
+              const parNo = pr.parselNo ?? p.parsel ?? "-";
+              const alan = pr.alan ?? p.alan ?? "-";
+
+              const aM2 = toFloatFlexible(alan);
+              const agacTop = Object.values(p.info?.agac || {}).reduce((s, v) => s + toFloatFlexible(v), 0);
+              const fidanTop = Object.values(p.info?.fidan || {}).reduce((s, v) => s + toFloatFlexible(v), 0);
+              const used = (agacTop + fidanTop) * 36;
+              const pct = aM2 > 0 ? Math.min(100, (used / aM2) * 100) : 0;
+              const red = [239, 68, 68], green = [34, 197, 94];
+              const t = pct / 100, mix = red.map((r, i) => Math.round(r + (green[i] - r) * t));
+              const barColor = `rgb(${mix.join(",")})`;
+
+              return (
+                <div
+                  key={p.id}
+                  className="plist-item"
+                  onClick={() => {
+                    setSelectedParcel(p.id);
+                    setOpenList(false);
+                  }}
+                  title="Parseli seç"
+                >
+                  <div className="plist-row-1">{tanim}</div>
+                  <div className="plist-row-2">
+                    <span className="pill-inline">Ada/Parsel: {adaNo} / {parNo}</span>
+                    <span className="pill-inline">Alan: {nfInt.format(toFloatFlexible(alan))} m²</span>
+                    <span className="pill-progress" role="img" aria-label={`Doluluk ${Math.round(pct)}%`}>
+                      <span className="pill-progress-fill" style={{ width: `${pct}%`, background: barColor }} />
+                      <span className="pill-progress-label">{Math.round(pct)}%</span>
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      {/* ===== /Modal ===== */}
     </div>
   );
 }
