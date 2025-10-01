@@ -248,6 +248,8 @@ function Section({ title, children, className = "" }) {
 
 /* ======================= MAIN COMPONENT ======================= */
 export default function SelectedAreaInfo({ parcel }) {
+
+  const [collapsed, setCollapsed] = useState(false);
   const { parcels } = useParcels();
   const { groupMode, groupedParcels, mapMode, setSelectedParcel } =
     useContext(ParcelContext);
@@ -341,6 +343,7 @@ export default function SelectedAreaInfo({ parcel }) {
                 </div>
                 <div className="sai-head-right" />
               </div>
+              
               {/* 1) Static row */}
               <div className="sai-row-3">
                 <Section title="Tanım">
