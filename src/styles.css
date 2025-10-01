@@ -476,7 +476,7 @@ img {
   background: var(--sai-table-head);
   color: #111827;
   font-weight: 700;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid var(--c-border);
 }
 .mode-table tbody td {
@@ -490,7 +490,10 @@ img {
 .mode-table tbody td:first-child {
   font-weight: 700;
 }
-
+.mode-table th,
+.mode-table td {
+  text-align: center !important; /* sola yaslı yerine ortalı */
+}
 /* empty state */
 .sai-empty {
   color: var(--sai-muted);
