@@ -24,40 +24,29 @@ const nfArea = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2 });
 const MODE_DEFS = {
   ilac: {
     title: "İlaçlama Bilgisi",
-    columns: [
-      "İlaç Marka",
-      "Miktar",
-      "Gözlem / Not",
-      "Tarih",
-      "Durum",
-    ],
+    columns: ["İlaç Marka", "Miktar", "Gözlem / Not", "Tarih", "Durum"],
   },
   hasat: {
     title: "Hasat Haritası",
     columns: [
       "Tür",
       "HasatKg",
+      "AğaçSayısı",
       "Gözlem/Not",
       "Tarih",
       "İşçiSayısı",
       "ÇalışılanSaat",
       "ÇıkanYağ",
-      "Verim",
+      "Verim"
     ],
-  },
+  }, 
   sayim: {
     title: "Sayım Bilgisi",
     columns: null, // will be set dynamically
   },
   gubre: {
     title: "Gübreleme",
-    columns: [
-      "Gübre Cinsi",
-      "Miktar",
-      "Gözlem/Not",
-      "Tarih",
-      "Durum",
-    ],
+    columns: ["Gübre Cinsi", "Miktar", "Gözlem/Not", "Tarih", "Durum"],
   },
 };
 
@@ -72,39 +61,84 @@ function summarizeIlac(list) {
         Miktar: e.miktar ? nfArea.format(toFloatFlexible(e.miktar)) : "-",
         "Gözlem / Not": e.not ?? e.gozlem ?? "-",
         Tarih: e.tarih ?? "-",
-        "Durum": e.durum ?? "-",
+        Durum: e.durum ?? "-",
       });
     });
   });
-  return { list: rows.length ? rows : [{
-    "İlaç Marka": "-", Miktar: "-", "Gözlem / Not": "-", Tarih: "-", "Durum": "-",
-  }] };
+  return {
+    list: rows.length
+      ? rows
+      : [
+          {
+            "İlaç Marka": "-",
+            Miktar: "-",
+            "Gözlem / Not": "-",
+            Tarih: "-",
+            Durum: "-",
+          },
+        ],
+  };
 }
 
 function summarizeHasat(list) {
   const rows = [];
+
+  // === Toplam ağaç (SAYIM verilerinden) ve hasat edilen ağaç ===
+  let totalSayimAgac = 0;
+  let totalHasatAgac = 0;
+
+  list.forEach((p) => {
+    const ag = p.info?.agac || {};
+    for (const v of Object.values(ag)) {
+      totalSayimAgac += toFloatFlexible(v);
+    }
+  });
+
+  list.forEach((p) => {
+    const src = p.info?.hasat || p.properties?.hasat || [];
+    (Array.isArray(src) ? src : []).forEach((e) => {
+      totalHasatAgac += toFloatFlexible(e.agacSayisi);
+    });
+  });
+
+  const kalanAgac = Math.max(totalSayimAgac - totalHasatAgac, 0);
+  const F = (n) => (toFloatFlexible(n) > 0 ? nfInt.format(toFloatFlexible(n)) : "-");
+
+  // satırlar
   list.forEach((p) => {
     const src = p.info?.hasat || p.properties?.hasat || [];
     (Array.isArray(src) ? src : []).forEach((e) => {
       const hasatKg = toFloatFlexible(e.miktar ?? e.hasatKg);
       const cikanYag = toFloatFlexible(e.yag ?? e.cikanYag);
       const verim = hasatKg > 0 ? `${nfArea.format((cikanYag / hasatKg) * 100)}%` : "-";
+
       rows.push({
         Tür: e.urun ?? e.tur ?? "-",
         HasatKg: hasatKg ? nfInt.format(hasatKg) : "-",
+        AğaçSayısı: F(e.agacSayisi),
         "Gözlem/Not": e.not ?? e.gozlem ?? "-",
         Tarih: e.tarih ?? "-",
         İşçiSayısı: e.isci ?? e.isciSayisi ? nfInt.format(toFloatFlexible(e.isci ?? e.isciSayisi)) : "-",
         ÇalışılanSaat: e.saat ?? e.calisilanSaat ? nfArea.format(toFloatFlexible(e.saat ?? e.calisilanSaat)) : "-",
         ÇıkanYağ: cikanYag ? nfInt.format(cikanYag) : "-",
-        Verim: verim,
+        Verim: verim
       });
     });
   });
-  return { list: rows.length ? rows : [{
-    Tür: "-", HasatKg: "-", "Gözlem/Not": "-", Tarih: "-", İşçiSayısı: "-", ÇalışılanSaat: "-", ÇıkanYağ: "-", Verim: "-",
-  }] };
+
+  return {
+    list: rows.length ? rows : [{
+      Tür: "-", HasatKg: "-", AğaçSayısı: "-", "Gözlem/Not": "-", Tarih: "-", İşçiSayısı: "-", ÇalışılanSaat: "-", ÇıkanYağ: "-", Verim: "-"
+    }],
+    totals: {
+      HasatEdilenAğaç: F(totalHasatAgac),
+      KalanAğaç: F(kalanAgac),
+      ToplamAğaç: F(totalSayimAgac)
+    }
+  };
 }
+
+
 
 function summarizeSayim(list) {
   const typeSet = new Set();
@@ -135,26 +169,41 @@ function summarizeSayim(list) {
   const types = Array.from(typeSet);
   const agacRow = { label: "Ağaç" };
   const fidanRow = { label: "Fidan" };
-  
-  agacRow.Toplam = types.reduce((sum, type) => sum + (agacCounts[type] > 0 ? agacCounts[type] : 0), 0);
-  fidanRow.Toplam = types.reduce((sum, type) => sum + (fidanCounts[type] > 0 ? fidanCounts[type] : 0), 0);
-  
+
+  agacRow.Toplam = types.reduce(
+    (sum, type) => sum + (agacCounts[type] > 0 ? agacCounts[type] : 0),
+    0
+  );
+  fidanRow.Toplam = types.reduce(
+    (sum, type) => sum + (fidanCounts[type] > 0 ? fidanCounts[type] : 0),
+    0
+  );
+
   agacRow.Toplam = agacRow.Toplam ? nfInt.format(agacRow.Toplam) : "-";
   fidanRow.Toplam = fidanRow.Toplam ? nfInt.format(fidanRow.Toplam) : "-";
 
   types.forEach((type) => {
-    agacRow[type.toUpperCase("tr-TR")] = agacCounts[type] > 0 ? nfInt.format(agacCounts[type]) : "-";
-    fidanRow[type.toUpperCase("tr-TR")] = fidanCounts[type] > 0 ? nfInt.format(fidanCounts[type]) : "-";
+    agacRow[type.toUpperCase("tr-TR")] =
+      agacCounts[type] > 0 ? nfInt.format(agacCounts[type]) : "-";
+    fidanRow[type.toUpperCase("tr-TR")] =
+      fidanCounts[type] > 0 ? nfInt.format(fidanCounts[type]) : "-";
   });
-  
+
   agacRow.Tarih = tarih;
   fidanRow.Tarih = tarih;
   agacRow.Durum = durum; // <-- Yeni eklenen satır
   fidanRow.Durum = durum; // <-- Yeni eklenen satır
 
   return {
-    columns: ["", ...types.map(t => t.toUpperCase("tr-TR")), "Toplam", "Tarih", "Durum"], // <-- Yeni eklenen sütun
-    list: types.length ? [agacRow, fidanRow] : [{ label: "Ağaç" }, { label: "Fidan" }],
+    columns: [
+      "",
+      "Toplam",
+      ...types.map((t) => t.toUpperCase("tr-TR")),
+      "Durum",
+    ], // <-- Yeni eklenen sütun
+    list: types.length
+      ? [agacRow, fidanRow]
+      : [{ label: "Ağaç" }, { label: "Fidan" }],
   };
 }
 
@@ -172,9 +221,19 @@ function summarizeGubre(list) {
       });
     });
   });
-  return { list: rows.length ? rows : [{
-    "Gübre Cinsi": "-", Miktar: "-", "Gözlem/Not": "-", Tarih: "-", "Durum": "-",
-  }] };
+  return {
+    list: rows.length
+      ? rows
+      : [
+          {
+            "Gübre Cinsi": "-",
+            Miktar: "-",
+            "Gözlem/Not": "-",
+            Tarih: "-",
+            Durum: "-",
+          },
+        ],
+  };
 }
 
 /* ---------- Simple card component ---------- */
@@ -190,7 +249,8 @@ function Section({ title, children, className = "" }) {
 /* ======================= MAIN COMPONENT ======================= */
 export default function SelectedAreaInfo({ parcel }) {
   const { parcels } = useParcels();
-  const { groupMode, groupedParcels, mapMode, setSelectedParcel } = useContext(ParcelContext);
+  const { groupMode, groupedParcels, mapMode, setSelectedParcel } =
+    useContext(ParcelContext);
 
   // ===== START: Parcel List (plist) Modal Logic =====
   const [openList, setOpenList] = useState(false);
@@ -233,9 +293,11 @@ export default function SelectedAreaInfo({ parcel }) {
     const mahalle = firstProps.mahalleAd ?? firstProps.mahalle ?? "-";
     const ada = firstProps.adaNo ?? firstProps.ada ?? "-";
     const parselNo = firstProps.parselNo ?? firstProps.parsel ?? "-";
-    const tarih = infoFirst.tarih  || "-";
-    const durum = infoFirst.durum  || "-";
-    const tanim = infoFirst.tanim || firstProps.tanim || "-";
+    const tarih = infoFirst.tarih || "-";
+    const durum = infoFirst.durum || "-";
+    const tanim = groupMode 
+  ? "Çoklu Seçim Modu" 
+  : (infoFirst.tanim || firstProps.tanim || "-");
 
     return { alanM2, donum, mahalle, ada, parselNo, tanim, tarih, durum };
   }, [selectedList]);
@@ -246,10 +308,14 @@ export default function SelectedAreaInfo({ parcel }) {
       return summarizeSayim(selectedList);
     }
     switch (mapMode) {
-      case "ilac": return summarizeIlac(selectedList);
-      case "hasat": return summarizeHasat(selectedList);
-      case "gubre": return summarizeGubre(selectedList);
-      default: return summarizeIlac(selectedList);
+      case "ilac":
+        return summarizeIlac(selectedList);
+      case "hasat":
+        return summarizeHasat(selectedList);
+      case "gubre":
+        return summarizeGubre(selectedList);
+      default:
+        return summarizeIlac(selectedList);
     }
   }, [mapMode, selectedList]);
 
@@ -259,12 +325,22 @@ export default function SelectedAreaInfo({ parcel }) {
   }
 
   return (
-    <div style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 9990 }}>
+    <div
+      style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 9990 }}
+    >
       <div style={{ maxWidth: 1100, margin: "2px auto" }}>
-        <div className="sai-panel" style={{ padding: '8px 8px' }}>
-
+        <div className="sai-panel" style={{ padding: "8px 8px" }}>
           {selectedList.length ? (
             <>
+              <div className="sai-head sai-head-3">
+                <div className="sai-head-left" />
+                <div className="sai-head-center">
+                  <div className="sai-mode-title">
+                    {MODE_DEFS[mapMode]?.title || "Harita Modu"}
+                  </div>
+                </div>
+                <div className="sai-head-right" />
+              </div>
               {/* 1) Static row */}
               <div className="sai-row-3">
                 <Section title="Tanım">
@@ -280,7 +356,9 @@ export default function SelectedAreaInfo({ parcel }) {
                     <div>
                       <span className="key">Ada / Parsel</span>
                       <span className="val">
-                        {groupMode ? `${selectedList.length} parsel` : `${base.ada} / ${base.parselNo}`}
+                        {groupMode
+                          ? `${selectedList.length} Seçim`
+                          : `${base.ada} / ${base.parselNo}`}
                       </span>
                     </div>
                   </div>
@@ -298,24 +376,60 @@ export default function SelectedAreaInfo({ parcel }) {
 
               {/* 2) Bottom info: as a table */}
               <Section className="sai-card mode-table">
-                <div className="mode-table-wrap" style={{ overflowX: 'auto', marginTop: 2, marginBottom: 2 }}>
-                  <table className="mode-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <div
+                  className="mode-table-wrap"
+                  style={{ overflowX: "auto", marginTop: 2, marginBottom: 2 }}
+                >
+                  <table
+                    className="mode-table"
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      fontSize: 12,
+                    }}
+                  >
                     <thead>
                       <tr>
                         {def.columns.map((col, idx) => (
-                          <th key={col + idx} style={{ fontWeight: 700, padding: '3px 6px', borderBottom: '1px solid #e5e7eb', background: '#f3f4f6', color: '#222', textAlign: 'left', fontSize: 12 }}>
+                          <th
+                            key={col + idx}
+                            style={{
+                              fontWeight: 700,
+                              padding: "3px 6px",
+                              borderBottom: "1px solid #e5e7eb",
+                              background: "#f3f4f6",
+                              color: "#222",
+                              textAlign: "left",
+                              fontSize: 12,
+                            }}
+                          >
                             {col || (idx === 0 ? "" : col)}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {Array.isArray(modeSummary.list) && modeSummary.list.length > 0 ? (
+                      {Array.isArray(modeSummary.list) &&
+                      modeSummary.list.length > 0 ? (
                         modeSummary.list.map((row, i) => (
                           <tr key={i}>
                             {def.columns.map((col, idx) => (
-                              <td key={col + idx} style={{ padding: '3px 6px', borderBottom: '1px solid #f3f4f6', background: '#fff', color: '#111827', fontSize: 12, fontWeight: idx === 0 ? 700 : 400 }}>
-                                {idx === 0 ? row.label : (row[col] != null && row[col] !== "" ? String(row[col]) : "-")}
+                              <td
+                                key={col + idx}
+                                style={{
+                                  padding: "3px 6px",
+                                  borderBottom: "1px solid #f3f4f6",
+                                  background: "#fff",
+                                  color: "#111827",
+                                  fontSize: 12,
+                                  fontWeight: idx === 0 ? 700 : 400,
+                                }}
+                              >
+                                {idx === 0
+                                  ? row.label
+                                  : row[col] != null && row[col] !== ""
+                                  ? String(row[col])
+                                  : "-"}
                               </td>
                             ))}
                           </tr>
@@ -323,7 +437,18 @@ export default function SelectedAreaInfo({ parcel }) {
                       ) : (
                         <tr>
                           {def.columns.map((col, idx) => (
-                            <td key={col + idx} style={{ padding: '3px 6px', borderBottom: '1px solid #f3f4f6', background: '#fff', color: '#111827', fontSize: 12 }}>-</td>
+                            <td
+                              key={col + idx}
+                              style={{
+                                padding: "3px 6px",
+                                borderBottom: "1px solid #f3f4f6",
+                                background: "#fff",
+                                color: "#111827",
+                                fontSize: 12,
+                              }}
+                            >
+                              -
+                            </td>
                           ))}
                         </tr>
                       )}
@@ -331,6 +456,22 @@ export default function SelectedAreaInfo({ parcel }) {
                   </table>
                 </div>
               </Section>
+              {mapMode === "hasat" && modeSummary.totals && (
+  <div className="sai-row-3 metrics">
+    <div className="sai-card">
+      <div className="sai-card-title">Hasat Edilen</div>
+      <div className="sai-metric">{modeSummary.totals.HasatEdilenAğaç}</div>
+    </div>
+    <div className="sai-card">
+      <div className="sai-card-title">Kalan</div>
+      <div className="sai-metric">{modeSummary.totals.KalanAğaç}</div>
+    </div>
+    <div className="sai-card">
+      <div className="sai-card-title">Toplam</div>
+      <div className="sai-metric">{modeSummary.totals.ToplamAğaç}</div>
+    </div>
+  </div>
+)}
             </>
           ) : (
             <div className="sai-empty">
@@ -356,14 +497,21 @@ export default function SelectedAreaInfo({ parcel }) {
             </button>
           </div>
 
-          <div style={{ padding: '0 16px 10px 16px' }}>
+          <div style={{ padding: "0 16px 10px 16px" }}>
             <input
               type="text"
               placeholder="Parsel ara..."
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="plist-search"
-              style={{ width: '100%', padding: '7px 12px', borderRadius: 6, border: '1px solid #bbb', fontSize: 15, marginBottom: 6 }}
+              style={{
+                width: "100%",
+                padding: "7px 12px",
+                borderRadius: 6,
+                border: "1px solid #bbb",
+                fontSize: 15,
+                marginBottom: 6,
+              }}
             />
           </div>
           <div className="plist-list">
@@ -375,12 +523,20 @@ export default function SelectedAreaInfo({ parcel }) {
               const alan = pr.alan ?? p.alan ?? "-";
 
               const aM2 = toFloatFlexible(alan);
-              const agacTop = Object.values(p.info?.agac || {}).reduce((s, v) => s + toFloatFlexible(v), 0);
-              const fidanTop = Object.values(p.info?.fidan || {}).reduce((s, v) => s + toFloatFlexible(v), 0);
+              const agacTop = Object.values(p.info?.agac || {}).reduce(
+                (s, v) => s + toFloatFlexible(v),
+                0
+              );
+              const fidanTop = Object.values(p.info?.fidan || {}).reduce(
+                (s, v) => s + toFloatFlexible(v),
+                0
+              );
               const used = (agacTop + fidanTop) * 36;
               const pct = aM2 > 0 ? Math.min(100, (used / aM2) * 100) : 0;
-              const red = [239, 68, 68], green = [34, 197, 94];
-              const t = pct / 100, mix = red.map((r, i) => Math.round(r + (green[i] - r) * t));
+              const red = [239, 68, 68],
+                green = [34, 197, 94];
+              const t = pct / 100,
+                mix = red.map((r, i) => Math.round(r + (green[i] - r) * t));
               const barColor = `rgb(${mix.join(",")})`;
 
               return (
@@ -395,11 +551,24 @@ export default function SelectedAreaInfo({ parcel }) {
                 >
                   <div className="plist-row-1">{tanim}</div>
                   <div className="plist-row-2">
-                    <span className="pill-inline">Ada/Parsel: {adaNo} / {parNo}</span>
-                    <span className="pill-inline">Alan: {nfInt.format(toFloatFlexible(alan))} m²</span>
-                    <span className="pill-progress" role="img" aria-label={`Doluluk ${Math.round(pct)}%`}>
-                      <span className="pill-progress-fill" style={{ width: `${pct}%`, background: barColor }} />
-                      <span className="pill-progress-label">{Math.round(pct)}%</span>
+                    <span className="pill-inline">
+                      Ada/Parsel: {adaNo} / {parNo}
+                    </span>
+                    <span className="pill-inline">
+                      Alan: {nfInt.format(toFloatFlexible(alan))} m²
+                    </span>
+                    <span
+                      className="pill-progress"
+                      role="img"
+                      aria-label={`Doluluk ${Math.round(pct)}%`}
+                    >
+                      <span
+                        className="pill-progress-fill"
+                        style={{ width: `${pct}%`, background: barColor }}
+                      />
+                      <span className="pill-progress-label">
+                        {Math.round(pct)}%
+                      </span>
                     </span>
                   </div>
                 </div>

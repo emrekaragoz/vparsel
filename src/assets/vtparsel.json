@@ -182,7 +182,29 @@
         "ayvalik": 0,
         "domat": 0,
         "kalamat": 0
-      }
+      },
+      "hasat": [
+        {
+          "tarih": "2025-09-22",
+          "urun": "gemlik",
+          "agacSayisi": 140,
+          "miktar": 1720,
+          "yag": 360,
+          "isci": 7,
+          "saat": 5.5,
+          "gozlem": "Rüzgar sonrası döküm arttı; kalite iyi."
+        },
+        {
+          "tarih": "2025-09-29",
+          "urun": "memecik",
+          "agacSayisi": 110,
+          "miktar": 1280,
+          "yag": 275,
+          "isci": 6,
+          "saat": 5,
+          "gozlem": "Son tur; ağaçların %15’i planlı olarak bırakıldı."
+        }
+      ]
     }
   },
   {

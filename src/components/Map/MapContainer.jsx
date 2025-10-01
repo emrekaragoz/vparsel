@@ -14,9 +14,16 @@ import logo from "../../assets/resim.webp";
 import ParcelListModal from "./ParcelListModal";
 
 /** Seçime göre haritayı odaklar (tekli / çoklu) */
-function FocusController({ parcels, selectedParcel, groupMode, groupedParcels, resetView }) {
+function FocusController({
+  parcels,
+  selectedParcel,
+  groupMode,
+  groupedParcels,
+  resetView,
+}) {
   const map = useMap();
-  const { setSelectedParcel, setGroupMode, setGroupedParcels } = useContext(ParcelContext); // State yönetim fonksiyonlarını çağırın
+  const { setSelectedParcel, setGroupMode, setGroupedParcels } =
+    useContext(ParcelContext); // State yönetim fonksiyonlarını çağırın
 
   useEffect(() => {
     if (!map) return;
@@ -51,18 +58,27 @@ function FocusController({ parcels, selectedParcel, groupMode, groupedParcels, r
         map.fitBounds(bounds, { padding: [100, 50], maxZoom: 17 });
       }
     }
-  }, [map, parcels, selectedParcel, groupMode, groupedParcels, resetView, setSelectedParcel, setGroupMode, setGroupedParcels]);
+  }, [
+    map,
+    parcels,
+    selectedParcel,
+    groupMode,
+    groupedParcels,
+    resetView,
+    setSelectedParcel,
+    setGroupMode,
+    setGroupedParcels,
+  ]);
 
   return null;
 }
 
-
 /* ---------------- Durum/renk/ikon yardımcıları ---------------- */
 
 const STATUS_MAP = {
-  yapildi:   { color: "#22f56fff", symbol: "✓",  title: "Yapıldı" },
+  yapildi: { color: "#22f56fff", symbol: "✓", title: "Yapıldı" },
   beklemede: { color: "#f8a71aff", symbol: "🕒", title: "Beklemede" },
-  gecikti:   { color: "#fb3333ff", symbol: "❗", title: "Zamanı Geçti" },
+  gecikti: { color: "#fb3333ff", symbol: "❗", title: "Zamanı Geçti" },
 };
 
 // "Yapıldı" | "Beklemede" | "Zamanı Geçti" → anahtar
@@ -92,7 +108,7 @@ function latestByDate(arr) {
 //... (Mevcut kod)
 function getParcelStatus(parcel, mapMode) {
   let src = null;
-  
+
   if (mapMode === "sayim") {
     // "sayim" modu için durumu doğrudan 'info.Durum'dan alın.
     const durum = parcel?.info?.Durum;
@@ -107,9 +123,11 @@ function getParcelStatus(parcel, mapMode) {
   }
 
   // Mevcut "ilac" ve "gubre" modu mantığı devam eder
-  if (mapMode === "ilac") src = parcel?.info?.ilaclama || parcel?.properties?.ilaclama;
-  if (mapMode === "gubre") src = parcel?.info?.gubre || parcel?.properties?.gubre;
-  
+  if (mapMode === "ilac")
+    src = parcel?.info?.ilaclama || parcel?.properties?.ilaclama;
+  if (mapMode === "gubre")
+    src = parcel?.info?.gubre || parcel?.properties?.gubre;
+
   if (!Array.isArray(src) || src.length === 0) return null;
 
   const latest = latestByDate(src);
@@ -126,28 +144,28 @@ export default function MapContainer() {
   const [openList, setOpenList] = useState(false);
   // Demo: Seçili parselin bilgisiyle mail gönder
 
-    const [resetView, setResetView] = useState(false);
-  
+  const [resetView, setResetView] = useState(false);
+
   // Reset view işlemi için timer
   const resetTimerRef = useRef(null);
-  
+
   const handleLogoClick = () => {
     // Reset view state'ini true yap
     setResetView(true);
-    
+
     // 100ms sonra reset view state'ini false yap
     if (resetTimerRef.current) {
       clearTimeout(resetTimerRef.current);
     }
-    
+
     resetTimerRef.current = setTimeout(() => {
       setResetView(false);
     }, 100);
   };
 
   const handleSendMail = () => {
-    const p = parcels.find(x => x.id === selectedParcel);
-    if (!p) return alert('Seçili parsel yok!');
+    const p = parcels.find((x) => x.id === selectedParcel);
+    if (!p) return alert("Seçili parsel yok!");
     const pr = p.properties || {};
     const tanim = (p.info && p.info.tanim) || pr.tanim || "-";
     const adaNo = pr.adaNo ?? p.ada ?? "-";
@@ -169,19 +187,20 @@ export default function MapContainer() {
     setMapMode,
   } = useContext(ParcelContext);
 
+  const PRIMARY_BLUE = "#3b82f6";
+
   // Harita Modları (renk sadece çizgi rengi için)
-    const MODES = useMemo(
-      () => [
-        { key: "sayim",  label: "Sayım Bilgisi",         color: "#8b5cf6" },
-        { key: "ilac",   label: "İlaçlama Bilgisi",      color: "#3b82f6" },
-        { key: "hasat",  label: "Hasat Haritası",        color: "#f59e0b" },
-        { key: "gubre",  label: "Gübreleme",             color: "#b7db40ff" },
-        { key: "analiz", label: "Analiz",                color: "#f13998ff" },
-      ],
-      []
-    );
-  const currentStrokeColor =
-    MODES.find((m) => m.key === mapMode)?.color || "#3b82f6";
+  const MODES = useMemo(
+    () => [
+      { key: "sayim", label: "Sayım Bilgisi" },
+      { key: "ilac", label: "İlaçlama Bilgisi" },
+      { key: "hasat", label: "Hasat Haritası" },
+      { key: "gubre", label: "Gübreleme" },
+      { key: "analiz", label: "Analiz" },
+    ],
+    []
+  );
+  const currentStrokeColor = PRIMARY_BLUE;
 
   const strokeSelected = { color: "red", weight: 3, fillOpacity: 0.45 };
 
@@ -192,11 +211,18 @@ export default function MapContainer() {
   };
 
   return (
-    <div className="map-root" style={{ height: "100%", width: "100%", position: "relative" }}>
+    <div
+      className="map-root"
+      style={{ height: "100%", width: "100%", position: "relative" }}
+    >
       {/* Mod paneli + logo */}
       <div className="map-modes">
         <div className="modes-control">
-          <div className="modes-logo" onClick={handleLogoClick} style={{ cursor: "pointer" }}>
+          <div
+            className="modes-logo"
+            onClick={handleLogoClick}
+            style={{ cursor: "pointer" }}
+          >
             <img src={logo} alt="Logo" />
           </div>
           {MODES.map((m) => (
@@ -210,44 +236,47 @@ export default function MapContainer() {
                 name="mapmode"
                 value={m.key}
                 checked={mapMode === m.key}
-                onChange={() => setMapMode(m.key)} // seçimleri bozma
+                onChange={() => setMapMode(m.key)}
               />
-              <span className="dot" style={{ background: m.color }} />
+              {/* <span className="dot" style={{ background: m.color }} />  ← SİLİNDİ */}
               <span className="txt">{m.label}</span>
             </label>
           ))}
         </div>
-        
       </div>
       {/* Sağ üst: Çoklu Seçim */}
       <div className="group-toggle">
-  <label className="group-toggle-inner">
-    <input
-      type="checkbox"
-      checked={groupMode}
-      onChange={(e) => setGroupMode(e.target.checked)}
-    />
-    <span>Çoklu Seçim</span>
-  </label>
-  {groupMode && (
-    <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-      <button type="button" className="group-select-all-btn" onClick={handleSelectAll}>
-        Tümünü Seç
-      </button>
-    </div>
-  )}
-</div>
+        <label className="group-toggle-inner">
+          <input
+            type="checkbox"
+            checked={groupMode}
+            onChange={(e) => setGroupMode(e.target.checked)}
+          />
+          <span>Çoklu Seçim</span>
+        </label>
+        {groupMode && (
+          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+            <button
+              type="button"
+              className="group-select-all-btn"
+              onClick={handleSelectAll}
+            >
+              Tümünü Seç
+            </button>
+          </div>
+        )}
+      </div>
 
-{/* Parsel Listeleri butonu - Çoklu Seçim butonunun altında */}
-<div className="parcel-list-toggle">
-  <button
-    type="button"
-    className="group-toggle-btn"
-    onClick={() => setOpenList(true)}
-  >
-    Parsel Listesi
-  </button>
-</div>
+      {/* Parsel Listeleri butonu - Çoklu Seçim butonunun altında */}
+      <div className="parcel-list-toggle">
+        <button
+          type="button"
+          className="group-toggle-btn"
+          onClick={() => setOpenList(true)}
+        >
+          Parsel Listesi
+        </button>
+      </div>
 
       {/* Harita */}
       <LeafletMap
@@ -284,7 +313,6 @@ export default function MapContainer() {
           // 🔹 Stil: seçiliyse kırmızı kenar, değilse mod rengi kenar
           let polyStyle;
           if (status) {
-            // Durum varsa hem border hem fill aynı renk
             polyStyle = {
               color: "#dedfe1ff",
               fillColor: status.color,
@@ -294,8 +322,8 @@ export default function MapContainer() {
             };
           } else {
             polyStyle = {
-              color: currentStrokeColor,
-              fillColor: currentStrokeColor,
+              color: currentStrokeColor, // = PRIMARY_BLUE
+              fillColor: currentStrokeColor, // = PRIMARY_BLUE
               weight: 2,
               fillOpacity: isSelected ? 0.9 : 0.35,
               opacity: 0.9,
@@ -306,8 +334,10 @@ export default function MapContainer() {
           let position = null;
           try {
             if (parsel?.koordinatlar?.length) {
-              const center = L.polygon(parsel.koordinatlar).getBounds().getCenter();
-              
+              const center = L.polygon(parsel.koordinatlar)
+                .getBounds()
+                .getCenter();
+
               // Merkez noktayı, ekran üzerinde 50 piksel sağa ve 25 piksel aşağı kaydır
               const pixelPoint = map.latLngToLayerPoint(center);
               const newPixelPoint = pixelPoint.add([50, 25]);
@@ -349,10 +379,7 @@ export default function MapContainer() {
         })}
       </LeafletMap>
 
-            <ParcelListModal 
-        open={openList} 
-        onClose={() => setOpenList(false)} 
-      />
+      <ParcelListModal open={openList} onClose={() => setOpenList(false)} />
     </div>
   );
 }

@@ -16,23 +16,19 @@
     },
     "build": {
       "name": "build",
-      "command": "npm run build",
-      "runAtStart": false
+      "command": "npm run build"
     },
     "postbuild": {
       "name": "postbuild",
-      "command": "npm run postbuild",
-      "runAtStart": false
+      "command": "npm run postbuild"
     },
     "test": {
       "name": "test",
-      "command": "npm run test",
-      "runAtStart": false
+      "command": "npm run test"
     },
     "eject": {
       "name": "eject",
-      "command": "npm run eject",
-      "runAtStart": false
+      "command": "npm run eject"
     }
   }
 }
