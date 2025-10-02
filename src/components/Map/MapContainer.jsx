@@ -187,7 +187,7 @@ export default function MapContainer() {
     setMapMode,
   } = useContext(ParcelContext);
 
-  const PRIMARY_BLUE = "#3b82f6";
+  const PRIMARY_BLUE = "#baff0b";
 
   // Harita Modları (renk sadece çizgi rengi için)
   const MODES = useMemo(

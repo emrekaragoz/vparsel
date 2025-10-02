@@ -37,9 +37,9 @@ const MODE_DEFS = {
       "İşçiSayısı",
       "ÇalışılanSaat",
       "ÇıkanYağ",
-      "Verim"
+      "Verim",
     ],
-  }, 
+  },
   sayim: {
     title: "Sayım Bilgisi",
     columns: null, // will be set dynamically
@@ -102,7 +102,8 @@ function summarizeHasat(list) {
   });
 
   const kalanAgac = Math.max(totalSayimAgac - totalHasatAgac, 0);
-  const F = (n) => (toFloatFlexible(n) > 0 ? nfInt.format(toFloatFlexible(n)) : "-");
+  const F = (n) =>
+    toFloatFlexible(n) > 0 ? nfInt.format(toFloatFlexible(n)) : "-";
 
   // satırlar
   list.forEach((p) => {
@@ -110,7 +111,8 @@ function summarizeHasat(list) {
     (Array.isArray(src) ? src : []).forEach((e) => {
       const hasatKg = toFloatFlexible(e.miktar ?? e.hasatKg);
       const cikanYag = toFloatFlexible(e.yag ?? e.cikanYag);
-      const verim = hasatKg > 0 ? `${nfArea.format((cikanYag / hasatKg) * 100)}%` : "-";
+      const verim =
+        hasatKg > 0 ? `${nfArea.format((cikanYag / hasatKg) * 100)}%` : "-";
 
       rows.push({
         Tür: e.urun ?? e.tur ?? "-",
@@ -118,27 +120,43 @@ function summarizeHasat(list) {
         AğaçSayısı: F(e.agacSayisi),
         "Gözlem/Not": e.not ?? e.gozlem ?? "-",
         Tarih: e.tarih ?? "-",
-        İşçiSayısı: e.isci ?? e.isciSayisi ? nfInt.format(toFloatFlexible(e.isci ?? e.isciSayisi)) : "-",
-        ÇalışılanSaat: e.saat ?? e.calisilanSaat ? nfArea.format(toFloatFlexible(e.saat ?? e.calisilanSaat)) : "-",
+        İşçiSayısı:
+          e.isci ?? e.isciSayisi
+            ? nfInt.format(toFloatFlexible(e.isci ?? e.isciSayisi))
+            : "-",
+        ÇalışılanSaat:
+          e.saat ?? e.calisilanSaat
+            ? nfArea.format(toFloatFlexible(e.saat ?? e.calisilanSaat))
+            : "-",
         ÇıkanYağ: cikanYag ? nfInt.format(cikanYag) : "-",
-        Verim: verim
+        Verim: verim,
       });
     });
   });
 
   return {
-    list: rows.length ? rows : [{
-      Tür: "-", HasatKg: "-", AğaçSayısı: "-", "Gözlem/Not": "-", Tarih: "-", İşçiSayısı: "-", ÇalışılanSaat: "-", ÇıkanYağ: "-", Verim: "-"
-    }],
+    list: rows.length
+      ? rows
+      : [
+          {
+            Tür: "-",
+            HasatKg: "-",
+            AğaçSayısı: "-",
+            "Gözlem/Not": "-",
+            Tarih: "-",
+            İşçiSayısı: "-",
+            ÇalışılanSaat: "-",
+            ÇıkanYağ: "-",
+            Verim: "-",
+          },
+        ],
     totals: {
       HasatEdilenAğaç: F(totalHasatAgac),
       KalanAğaç: F(kalanAgac),
-      ToplamAğaç: F(totalSayimAgac)
-    }
+      ToplamAğaç: F(totalSayimAgac),
+    },
   };
 }
-
-
 
 function summarizeSayim(list) {
   const typeSet = new Set();
@@ -248,6 +266,7 @@ function Section({ title, children, className = "" }) {
 
 /* ======================= MAIN COMPONENT ======================= */
 export default function SelectedAreaInfo({ parcel }) {
+  const [panelCollapsed, setPanelCollapsed] = useState(false);
   const { parcels } = useParcels();
   const { groupMode, groupedParcels, mapMode, setSelectedParcel } =
     useContext(ParcelContext);
@@ -295,9 +314,9 @@ export default function SelectedAreaInfo({ parcel }) {
     const parselNo = firstProps.parselNo ?? firstProps.parsel ?? "-";
     const tarih = infoFirst.tarih || "-";
     const durum = infoFirst.durum || "-";
-    const tanim = groupMode 
-  ? "Çoklu Seçim Modu" 
-  : (infoFirst.tanim || firstProps.tanim || "-");
+    const tanim = groupMode
+      ? "Çoklu Seçim Modu"
+      : infoFirst.tanim || firstProps.tanim || "-";
 
     return { alanM2, donum, mahalle, ada, parselNo, tanim, tarih, durum };
   }, [selectedList]);
@@ -341,6 +360,7 @@ export default function SelectedAreaInfo({ parcel }) {
                 </div>
                 <div className="sai-head-right" />
               </div>
+
               {/* 1) Static row */}
               <div className="sai-row-3">
                 <Section title="Tanım">
@@ -457,21 +477,27 @@ export default function SelectedAreaInfo({ parcel }) {
                 </div>
               </Section>
               {mapMode === "hasat" && modeSummary.totals && (
-  <div className="sai-row-3 metrics">
-    <div className="sai-card">
-      <div className="sai-card-title">Hasat Edilen</div>
-      <div className="sai-metric">{modeSummary.totals.HasatEdilenAğaç}</div>
-    </div>
-    <div className="sai-card">
-      <div className="sai-card-title">Kalan</div>
-      <div className="sai-metric">{modeSummary.totals.KalanAğaç}</div>
-    </div>
-    <div className="sai-card">
-      <div className="sai-card-title">Toplam</div>
-      <div className="sai-metric">{modeSummary.totals.ToplamAğaç}</div>
-    </div>
-  </div>
-)}
+                <div className="sai-row-3 metrics">
+                  <div className="sai-card">
+                    <div className="sai-card-title">Hasat Edilen</div>
+                    <div className="sai-metric">
+                      {modeSummary.totals.HasatEdilenAğaç}
+                    </div>
+                  </div>
+                  <div className="sai-card">
+                    <div className="sai-card-title">Kalan</div>
+                    <div className="sai-metric">
+                      {modeSummary.totals.KalanAğaç}
+                    </div>
+                  </div>
+                  <div className="sai-card">
+                    <div className="sai-card-title">Toplam</div>
+                    <div className="sai-metric">
+                      {modeSummary.totals.ToplamAğaç}
+                    </div>
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <div className="sai-empty">
